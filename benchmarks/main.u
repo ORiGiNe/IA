@@ -9,12 +9,15 @@ class Benchmark
 	var max;
 	var moyenne;
 	var core;
+	var preprocess;
 	
 	function run (count)
 	{
 		var values = List.new;
 		var time;
 
+		this.preprocess;
+		
 		for| (var i = 0; i < count; i++) {
 			var time = Date.now.timestamp|
 			this.core|
@@ -46,10 +49,33 @@ class Benchmark
 		echo ("max : " + max.asString);
 		echo ("moyenne : " + moyenne.asString);
 	};
-};
+}|;
 
 
-var bgaop = Benchmark.new("Création du gaop");
-bgaop.core = function { UGaop.new("/dev/ttyACM1"); };
-bgaop.run(200);
+var bgaop = Benchmark.new("Création du gaop")|;
+bgaop.core = function { UGaop.new("/dev/ttyACM1"); }|;
+bgaop.run(1)|;
 bgaop.print;
+
+var beffecteur = Benchmark.new("Création d'un Effecteur")|;
+beffecteur.preprocess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
+beffecteur.core = function { UEffecteur.new(10,this.g); }|;
+beffecteur.run(1000)|;
+beffecteur.print;
+
+var bcapteur = Benchmark.new("Création d'un Capteur")|;
+bcapteur.preprocess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
+bcapteur.core = function { UCapteur.new(10,this.g); }|;
+bcapteur.run(1000)|;
+bcapteur.print;
+
+var binitialise = Benchmark.new("Initialisation d'un gaop avec 3 effecteurs")|;
+binitialise.preprocess =
+	function {
+		var this.g = UGaop.new("/dev/ttyACM1");
+		var this.e1 = UEffecteur.new(9,this.g);
+		var this.e2 = UEffecteur.new(10,this.g);
+		var this.e3 = UEffecteur.new(11,this.g);
+	}|;
+binitialise.run(1000)|;
+binitialise.print;
