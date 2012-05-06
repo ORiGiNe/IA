@@ -1,27 +1,55 @@
-var somme = List.new;
+class Benchmark
+{
+	function init (name)
+	{
+		var this.name = name;
+	};
 
-for| (var i = 0; i < 100; i++) {
-	var time = Date.now.timestamp;
-	var g = UGaop.new("/dev/ttyACM1");
-	somme += [Date.new.timestamp - time];
+	var min;
+	var max;
+	var moyenne;
+	var core;
+	
+	function run (count)
+	{
+		var values = List.new;
+		var time;
+
+		for| (var i = 0; i < count; i++) {
+			var time = Date.now.timestamp|
+			this.core|
+			values += [Date.now.timestamp - time]
+		};
+
+		var resultat = values[0];
+		this.min = values[0];
+		this.max = values[0];
+
+		for| (var i = 1; i < count; i++)
+		{
+			resultat += values[i];
+
+			if (values[i] < this.min)
+				this.min = values[i];
+
+			if (values[i] > this.max)
+				this.max = values[i];
+		};
+
+		this.moyenne = resultat / count;
+	};
+
+	function print
+	{
+		echo (name + " : ");
+		echo ("min : " + min.asString);
+		echo ("max : " + max.asString);
+		echo ("moyenne : " + moyenne.asString);
+	};
 };
 
 
-var resultat = somme[0]|;
-var min = somme[0];
-var max = somme[0];
-
-for| (var i = 1; i < 100; i++) {
-	resultat += somme[i];
-
-	if (somme[i] > max)
-		max = somme[i];
-
-	if (somme[i] < min)
-		min = somme[i];
-};
-
-echo ("max : " + max.asString);
-echo ("min : " + min.asString);
-echo (resultat/100);
-echo ("fini");
+var bgaop = Benchmark.new("Création du gaop");
+bgaop.core = function { UGaop.new("/dev/ttyACM1"); };
+bgaop.run(200);
+bgaop.print;
