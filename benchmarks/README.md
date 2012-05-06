@@ -7,4 +7,4 @@
 
 ## Options
 
- * _Benchmark.preprocess_ peut contenir une fonction à exécuter une fois avant le benchmark
+ * _Benchmark.preProcess_ peut contenir une fonction à exécuter une fois avant le benchmark

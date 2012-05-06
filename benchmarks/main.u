@@ -9,19 +9,25 @@ class Benchmark
 	var max;
 	var moyenne;
 	var core;
-	var preprocess;
+	var preProcess;
+	var preProcessEach;
+	var postProcessEach;
 	
 	function run (count)
 	{
-		var values = List.new;
-		var time;
+		var values = List.new|
+		var time|
 
-		this.preprocess;
+		this.preProcess|
 		
 		for| (var i = 0; i < count; i++) {
+			this.preProcessEach|
+
 			time = Date.now.timestamp|
 			this.core|
-			values += [Date.now.timestamp - time]
+			values += [Date.now.timestamp - time]|
+
+			this.postProcessEach
 		};
 
 		var resultat = values[0];
@@ -54,28 +60,47 @@ class Benchmark
 
 var bgaop = Benchmark.new("Création du gaop")|;
 bgaop.core = function { UGaop.new("/dev/ttyACM1"); }|;
-bgaop.run(1)|;
+//bgaop.run(1)|;
 bgaop.print;
 
 var beffecteur = Benchmark.new("Création d'un Effecteur")|;
-beffecteur.preprocess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
+beffecteur.preProcess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
 beffecteur.core = function { UEffecteur.new(10,this.g); }|;
-beffecteur.run(1000)|;
+//beffecteur.run(1000)|;
 beffecteur.print;
 
 var bcapteur = Benchmark.new("Création d'un Capteur")|;
-bcapteur.preprocess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
+bcapteur.preProcess = function { var this.g = UGaop.new("/dev/ttyACM1"); }|;
 bcapteur.core = function { UCapteur.new(10,this.g); }|;
-bcapteur.run(1000)|;
+//bcapteur.run(1000)|;
 bcapteur.print;
 
-var binitialise = Benchmark.new("Initialisation d'un gaop avec 3 effecteurs")|;
-binitialise.preprocess =
+var bget = Benchmark.new("Temps de réponse d'un sonar")|;
+bget.preProcess =
 	function {
-		var this.g = UGaop.new("/dev/ttyACM1");
-		var this.e1 = UEffecteur.new(9,this.g);
-		var this.e2 = UEffecteur.new(10,this.g);
-		var this.e3 = UEffecteur.new(11,this.g);
+		var this.g = UGaop.new("/dev/ttyUSB1")|
+		var this.s = UCapteur.new(4,this.g)|
+		this.g.initialise
 	}|;
-binitialise.run(1000)|;
-binitialise.print;
+bget.core = function { echo(this.s.get) }|;
+bget.run(1000)|;
+bget.print;
+
+//var binitialise = Benchmark.new("Initialisation d'un gaop avec 3 effecteurs")|;
+//binitialise.preProcessEach =
+//	function {
+//		var this.g = UGaop.new("/dev/ttyACM1")|
+//		var this.e1 = UEffecteur.new(9,this.g)|
+//		var this.e2 = UEffecteur.new(10,this.g)|
+//		var this.e3 = UEffecteur.new(11,this.g)
+//	}|;
+//binitialise.postProcessEach =
+//	function {
+//		this.removeSlot("g")|
+//		this.removeSlot("e1")|
+//		this.removeSlot("e2")|
+//		this.removeSlot("e3")
+//	}|;
+//binitialise.core = function { this.g.initialise| echo("I'm done")  }|;
+//binitialise.run(2)|;
+//binitialise.print;
