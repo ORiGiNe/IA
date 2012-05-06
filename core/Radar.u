@@ -1,0 +1,79 @@
+class Radar {
+	var sonars = List.new; // liste des couples (sonar, position)
+	var posMonitored; // liste des positions surveillées
+	var event; // événement émis en cas d'approche
+	var delay = 0.03s; // delai entre deux check des sonars
+	var range = 20; // distance minimale à l'adversaire que l'on accepte
+	var tmp;
+	
+	
+	function init (sonarsList, positions, event)
+	{
+		// on effectue ici un hack assez dégueu
+		// obligatoire cependant car on n'a pas
+		// accès à this.sonar dans le eachi()
+		sonarsList.eachi(
+			function (v, i)
+			{
+				sonarsList[i] =  Pair.new(v, positions[i])
+			});
+		sonars = sonarsList;
+		this.event = event
+	};
+	
+	function monitor
+	{
+		//every (delay)
+		//{
+			for& (var sonar in this.sonars)
+			{
+				echo("hop");
+				this.tmp = sonar.first.get;
+				every (delay)
+				{
+					this.tmp = sonar.first.get;
+					echo("tmp = " + this.tmp.asString)
+				},
+
+				whenever (sonar.second in this.posMonitored && this.tmp < this.range)
+				{
+					//tmp = sonar.first.get|
+					//echo(tmp);
+
+					//if (tmp < this.range)
+					//	event!(tmp, sonar.second);
+					echo("ahhahah");
+					event!
+				}
+			};
+		//};
+	};
+};
+
+echo("Ahah");
+var g = UGaop.new("/dev/ttyUSB1");
+var s = UCapteur.new(4,g);
+g.initialise;
+
+var opponent = Event.new;
+var r = Radar.new([s],["N"],opponent);
+r.posMonitored = ["N"]|;
+r.monitor,
+
+var state = "normal";
+//every (0.2s) {
+//	echo(s.get)
+//},
+
+at (opponent? ~ 1s)
+	if (state != "crisis")
+	{
+		state = "crisis";
+		echo("OPPONENT !!!");
+		l: loop {
+			echo("working")
+		},
+		sleep(2);
+		l.stop;
+		state = "crisi"
+	};

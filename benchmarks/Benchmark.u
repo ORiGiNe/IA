@@ -31,18 +31,12 @@ class Benchmark
 		};
 
 		var resultat = values[0];
-		this.min = values[0];
-		this.max = values[0];
+		this.min = values.min;
+		this.max = values.max;
 
 		for| (var i = 1; i < count; i++)
 		{
-			resultat += values[i];
-
-			if (values[i] < this.min)
-				this.min = values[i];
-
-			if (values[i] > this.max)
-				this.max = values[i];
+			resultat += values[i]
 		};
 
 		this.moyenne = resultat / count;
