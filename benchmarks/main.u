@@ -19,7 +19,7 @@ class Benchmark
 		this.preprocess;
 		
 		for| (var i = 0; i < count; i++) {
-			var time = Date.now.timestamp|
+			time = Date.now.timestamp|
 			this.core|
 			values += [Date.now.timestamp - time]
 		};
