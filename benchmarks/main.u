@@ -1,0 +1,27 @@
+var somme = List.new;
+
+for| (var i = 0; i < 100; i++) {
+	var time = Date.now.timestamp;
+	var g = UGaop.new("/dev/ttyACM1");
+	somme += [Date.new.timestamp - time];
+};
+
+
+var resultat = somme[0]|;
+var min = somme[0];
+var max = somme[0];
+
+for| (var i = 1; i < 100; i++) {
+	resultat += somme[i];
+
+	if (somme[i] > max)
+		max = somme[i];
+
+	if (somme[i] < min)
+		min = somme[i];
+};
+
+echo ("max : " + max.asString);
+echo ("min : " + min.asString);
+echo (resultat/100);
+echo ("fini");
