@@ -30,6 +30,7 @@ class Radar {
 	var _sonarsMonitored = []; // liste des sonars surveillées
 	var _event; // événement émis en cas d'approche
 	var _monitorLoop = Tag.new("Monitor Loop"); // tag contenant la loop de monitoring
+    var _monitorLoop.update = _monitorLoop.clone; // tag fils
 	
 	var posMonitored = []; // liste des positions surveillées
     var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
@@ -123,6 +124,5 @@ class Radar {
 	function stop {
         _logLoop.log << "I want you to stop"; 
 		_monitorLoop.stop;
-        _monitorLoop.update.stop;
 	};
 }|;
