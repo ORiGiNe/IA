@@ -1,57 +1,120 @@
+class Sonar {
+	var _s; // le sonar
+	var pos; // sa position
+	var range; // son champ de vision
+
+	// constructeur
+	function init (s, pos, range) {
+		_s = s;
+		this.pos = pos;
+		this.range = range;
+	};
+	
+	function get {
+		return _s.get
+	};
+
+	// position min visible
+	function min {
+		return pos - range / 2;
+	};
+	
+	// posisiton max visible
+	function max {
+		return pos - range / 2;
+	};
+}|;
+
 class Radar {
-	var sonars = List.new; // liste des couples (sonar, position)
-	var posMonitored; // liste des positions surveillées
-	var event; // événement émis en cas d'approche
+	var _sonars = []; // liste des couples (sonar, position)
+	var _sonarsMonitored = []; // liste des sonars surveillées
+	var _event; // événement émis en cas d'approche
+	var _monitorLoop = Tag.new("Monitor Loop"); // tag contenant la loop de monitoring
+	
+	var posMonitored = []; // liste des positions surveillées
 	var delay = 0.03s; // delai entre deux check des sonars
 	var range = 20; // distance minimale à l'adversaire que l'on accepte
 	var tmp;
+
+	var _logRadar = Logger.new("Radar");
+	var _logLoop = Logger.new("Monitoring");
 	
-	
-	function init (sonarsList, positions, event)
-	{
+	// constructeur
+	function init (sonarsList, event) {
 		// on effectue ici un hack assez dégueu
 		// obligatoire cependant car on n'a pas
 		// accès à this.sonar dans le eachi()
 		sonarsList.eachi(
-			function (v, i)
-			{
-				sonarsList[i] =  Pair.new(v, positions[i])
+			function (s, i)	{
+				sonarsList[i] =  Pair.new(s, s.pos)
 			});
-		sonars = sonarsList;
-		this.event = event
+		_sonars = sonarsList;
+		_event = event;
+		
+		// dès que les positions surveillées changent, on fait des trucs
+		at (posMonitored->changed?)
+		{
+			_logRadar.log << "posMonitored mis à jour";
+			_logRadar.log << "recalcule des sonars à monitorer";
+			
+			_monitorLoop.stop;
+			_sonarsMonitored = [];
+			
+			for (var sonar in _sonars) {
+				if (sonar.first.pos in posMonitored)
+					_sonarsMonitored << sonar;
+			};
+			
+			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored;
+
+			_monitor
+		};
+
+		_logRadar.log << "init terminé"
 	};
+
 	
-	function monitor
-	{
-		//every (delay)
-		//{
-			for& (var sonar in this.sonars)
-			{
-				echo("Début de le surveillance");
-				this.tmp = sonar.first.get;
-				every (delay)
-				{
-					this.tmp = sonar.first.get;
-					echo("tmp = " + this.tmp.asString)
+	// fonction principale, bloquante (à lancer un tâche de fond)
+	function _monitor {
+		at (_monitorLoop.leave?)
+			_logLoop.log << "They want me to stop";
+
+		_monitorLoop:
+		{
+			for& (var sonar in _sonarsMonitored) {
+					
+				_logLoop.log << "Début de le surveillance";
+					
+				tmp = sonar.first.get;
+				_logLoop.log << "distance = " + tmp;
+
+				_logLoop.log << "loop de mise à jour des valeurs";			
+				every (delay) {
+					tmp = sonar.first.get;
+					_logLoop.log << "distance = " + tmp
 				},
-                
-                var e; 
-				at (sonar.second in this.posMonitored && this.tmp < this.range)
-				{
+
+				_logLoop.log << "démarrage du at";
+				var e;
+				at (posMonitored && tmp < range) {
 					//tmp = sonar.first.get|
-					//echo(tmp);
+					//_logLoop.log << tmp;
 
 					//if (tmp < this.range)
 					//	event!(tmp, sonar.second);
-					echo("ALERTE !");
-					e = event.trigger;
+					_logLoop.log << "ALERTE !";
+					e = _event.trigger;
 				}
-                onleave
-                {
-                    echo("FIN DE L'ALERTE");
-                    e.stop;
-                };
+				onleave	{
+					_logLoop.log << "FIN DE L'ALERTE";
+					e.stop;
+				};
 			};
-		//};
+		};
+	};
+
+
+	function stop {
+		_monitorLoop.stop
 	};
 }|;

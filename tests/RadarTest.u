@@ -1,6 +1,9 @@
 requireFile("../core/Radar.u");
 
-echo("Start");
+var log = Logger.new("main")|;
+
+log.log << "Start"|;
+
 //var g = UGaop.new("/dev/ttyUSB1");
 //var s = UCapteur.new(4,g);
 //g.initialise;
@@ -13,41 +16,42 @@ function s.get
 
 var opponent = Event.new|;
 
-var r = Radar.new([s],["N"],opponent)|;
-r.posMonitored = ["N"]|;
+var r = Radar.new([Sonar.new(s,20,32)],opponent)|;
+
+work:
+{
+log.log << "mise à jour de posMonitored";
+r.posMonitored = [20]|;
 r.delay = 1s|;
-r.monitor,
+log.log << "Monitoring started";
 
 var state = "normal"|;
-//every (0.2s) {
-//	echo(s.get)
-//},
 
 at (opponent?)
-    echo ("OPPONENT ???");
+    log.log << "OPPONENT ???";
 
 whenever (opponent? ~ 2s)
 	if (state != "crisis")
 	{
 		state = "crisis";
-		echo("OPPONENT !!!");
+		log.log << "OPPONENT !!!";
 
 		l: every (1s) {
-			echo("working")
+			log.log << "working"
 		},
 
 		sleep(2);
 		l.stop;
-        echo ("work done");
+        log.log << "work done";
 		state = "crisi"
 	};
 
-sleep(5s);
+sleep(2s);
 s.get = function {
     return 4
 }|;
 
-sleep(10s);
+sleep(4s);
 s.get = function {
     return 40
 }|;
@@ -61,3 +65,22 @@ sleep(1);
 s.get = function {
     return 35
 }|;
+
+sleep(3);
+log.log << "mise à jour de posMonitored";
+r.posMonitored = [32];
+s.get = function {
+    return 10
+}|;
+
+sleep(3);
+log.log << "mise à jour de posMonitored";
+r.posMonitored << 20;
+
+},
+
+at (work.leave?)
+	r.stop;
+
+sleep(50s);
+work.stop;
