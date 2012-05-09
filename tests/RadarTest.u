@@ -21,7 +21,6 @@ var r = Radar.new([Sonar.new(s,20,32)],opponent)|;
 log.log << "mise à jour de posMonitored"|;
 r.posMonitored = [20]|;
 r.delay = 1s|;
-log.log << "Monitoring started"|;
 
 var state = "normal"|;
 

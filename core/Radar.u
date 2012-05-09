@@ -21,7 +21,7 @@ class Sonar {
 	
 	// posisiton max visible
 	function max {
-		return pos - range / 2;
+		return pos + range / 2;
 	};
 }|;
 
@@ -35,18 +35,14 @@ class Radar {
 	var posMonitored = []; // liste des positions surveillées
     var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
 	var delay = 0.03s; // delai entre deux check des sonars
-	var range = 20; // distance minimale à l'adversaire que l'on accepte
-	var tmp;
+	var distMin = 20; // distance minimale à l'adversaire que l'on accepte
 
 	var _logRadar = Logger.new("Radar");
 	var _logLoop = Logger.new("Monitoring");
 	
 	// constructeur
 	function init (sonars, event) {
-		// on effectue ici un hack assez dégueu
-		// obligatoire cependant car on n'a pas
-		// accès à this.sonar dans le eachi()
-		_sonars = sonars;
+        _sonars = sonars;
 		_event = event;
 		
 		// dès que les positions surveillées changent,
@@ -57,18 +53,48 @@ class Radar {
 			_logRadar.log << "recalcule des sonars à monitorer";
 			
 			_monitorLoop.stop;
+            posMonitored = posMonitored.sort;
 			_sonarsMonitored = [];
-			
-			for (var sonar in _sonars) {
-				for (var pos in posMonitored)
-                    if (sonar.pos == pos)
-    					_sonarsMonitored << sonar;
-			};
-			
-			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored.asString;
+
+            // on parcourt toutes les positions surveillées
+            for (var pos in posMonitored) {
+                // le groupe de sonar a surveiller pour cette position
+                // le premier est le sonar principal, les suivants servent à redonder
+                var sonarsGroup = [];
+
+                // on regarde s'il y a un sonar dans cette position
+                if (pos in _sonars.map(function (s) { s.pos }))
+        			for (var sonar in _sonars)
+    		    		if (sonar.pos == pos) {
+                            // on l'ajoute au groupe
+                            sonarsGroup << sonar;
+
+                            // on cherche d'autre sonars pour redonder
+                            for (var ssonar in _sonars)
+                                if (ssonar != sonar && (ssonar.max >= pos || ssonar.min <= pos))
+                                    sonarsGroup << ssonar;
+
+                        }
+                else {
+                    // s'il n'y a pas de sonar dans cette position,
+                    // on cherche tous les sonars proches
+                    for (var sonar in _sonars)
+                        if (sonar.max >= pos || sonar.min <= pos)
+                            sonarsGroup << sonar;
+
+                    // on trie cette liste en mettant le plus proche en premier
+                    sonarsGroup = sonarsGroup.sort(
+                        function (a, b) {
+                            (a.pos - pos).abs  < (b.pos - pos).abs
+                        })
+                };
+
+                if (!sonarsGroup.empty)
+                    _sonarsMonitored << sonarsGroup;
+            };
 
             _oldPosMonitored = posMonitored.clone;
-
+			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored.asString;
     		_monitor
 		};
 
@@ -84,30 +110,30 @@ class Radar {
 		_monitorLoop:
 		{
 			for& (var sonar in _sonarsMonitored) {
-					
 				_logLoop.log << "Début de le surveillance";
 					
-				tmp = sonar.get;
-				_logLoop.log << "distance = " + tmp;
+				var distance = sonar[0].get;
 
 				_logLoop.log << "loop de mise à jour des valeurs";
 
                 _monitorLoop.update:
-				every (delay) {
-					tmp = sonar.get;
-					_logLoop.log << "distance = " + tmp
-				},
+    				every (delay) {
+	    				distance = sonar[0].get;
+		    			_logLoop.log << "distance = " + distance
+			    	},
 
 				_logLoop.log << "démarrage du at";
 				var e;
-				at (posMonitored && tmp < range) {
-					//tmp = sonar.get|
-					//_logLoop.log << tmp;
+				at (distance < distMin) {
+                    // le sonar principale a détecté un adversaire
+                    // on vérifie avec les sonars redondants
 
-					//if (tmp < this.range)
-					//	event!(tmp, sonar.pos);
-					_logLoop.log << "ALERTE !";
-					e = _event.trigger;
+                    // nécéssaire, je ne sais pas pourquoi
+                    var distMin = distMin;
+                    if (sonar.foldl(function (a, b) { a && (b.get < distMin) }, true)) {
+    					_logLoop.log << "ALERTE !";
+	    				e = _event.trigger
+                    };
 				}
 				onleave	{
 					_logLoop.log << "FIN DE L'ALERTE";
