@@ -53,7 +53,8 @@ class Radar {
 		_sonars = sonarsList;
 		_event = event;
 		
-		// dès que les positions surveillées changent, on fait des trucs
+		// dès que les positions surveillées changent,
+        // on met à jour la liste des sonars surveillés
 		at (posMonitored != _oldPosMonitored)
 		{
 			_logRadar.log << "posMonitored mis à jour : " + posMonitored;
@@ -71,8 +72,7 @@ class Radar {
 
             _oldPosMonitored = posMonitored.clone;
 
-            if (!posMonitored.empty)
-    			_monitor,
+    		_monitor
 		};
 
 		_logRadar.log << "init terminé"

@@ -40,7 +40,7 @@ whenever (opponent? ~ 2s)
 		    sleep(2);
 		    l.stop;
             log.log << "work done";
-		    state = "crisi"
+		    state = "normal"
     };
 
 sleep(2s);
