@@ -42,15 +42,11 @@ class Radar {
 	var _logLoop = Logger.new("Monitoring");
 	
 	// constructeur
-	function init (sonarsList, event) {
+	function init (sonars, event) {
 		// on effectue ici un hack assez dégueu
 		// obligatoire cependant car on n'a pas
 		// accès à this.sonar dans le eachi()
-		sonarsList.eachi(
-			function (s, i)	{
-				sonarsList[i] =  Pair.new(s, s.pos)
-			});
-		_sonars = sonarsList;
+		_sonars = sonars;
 		_event = event;
 		
 		// dès que les positions surveillées changent,
@@ -64,8 +60,9 @@ class Radar {
 			_sonarsMonitored = [];
 			
 			for (var sonar in _sonars) {
-				if (sonar.first.pos in posMonitored)
-					_sonarsMonitored << sonar;
+				for (var pos in posMonitored)
+                    if (sonar.pos == pos)
+    					_sonarsMonitored << sonar;
 			};
 			
 			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored.asString;
@@ -90,25 +87,25 @@ class Radar {
 					
 				_logLoop.log << "Début de le surveillance";
 					
-				tmp = sonar.first.get;
+				tmp = sonar.get;
 				_logLoop.log << "distance = " + tmp;
 
 				_logLoop.log << "loop de mise à jour des valeurs";
 
                 _monitorLoop.update:
 				every (delay) {
-					tmp = sonar.first.get;
+					tmp = sonar.get;
 					_logLoop.log << "distance = " + tmp
 				},
 
 				_logLoop.log << "démarrage du at";
 				var e;
 				at (posMonitored && tmp < range) {
-					//tmp = sonar.first.get|
+					//tmp = sonar.get|
 					//_logLoop.log << tmp;
 
 					//if (tmp < this.range)
-					//	event!(tmp, sonar.second);
+					//	event!(tmp, sonar.pos);
 					_logLoop.log << "ALERTE !";
 					e = _event.trigger;
 				}
