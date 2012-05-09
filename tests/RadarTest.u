@@ -18,12 +18,10 @@ var opponent = Event.new|;
 
 var r = Radar.new([Sonar.new(s,20,32)],opponent)|;
 
-work:
-{
-log.log << "mise à jour de posMonitored";
+log.log << "mise à jour de posMonitored"|;
 r.posMonitored = [20]|;
 r.delay = 1s|;
-log.log << "Monitoring started";
+log.log << "Monitoring started"|;
 
 var state = "normal"|;
 
@@ -31,20 +29,19 @@ at (opponent?)
     log.log << "OPPONENT ???";
 
 whenever (opponent? ~ 2s)
-	if (state != "crisis")
-	{
-		state = "crisis";
-		log.log << "OPPONENT !!!";
+    if (state != "crisis") {
+		    state = "crisis";
+		    log.log << "OPPONENT !!!";
 
-		l: every (1s) {
-			log.log << "working"
-		},
+		    l: every (1s) {
+			    log.log << "working"
+		    },
 
-		sleep(2);
-		l.stop;
-        log.log << "work done";
-		state = "crisi"
-	};
+		    sleep(2);
+		    l.stop;
+            log.log << "work done";
+		    state = "crisi"
+    };
 
 sleep(2s);
 s.get = function {
@@ -67,20 +64,21 @@ s.get = function {
 }|;
 
 sleep(3);
-log.log << "mise à jour de posMonitored";
-r.posMonitored = [32];
+log.log << "mise à jour de posMonitored"|;
+r.posMonitored = [32]|;
 s.get = function {
     return 10
 }|;
 
 sleep(3);
-log.log << "mise à jour de posMonitored";
-r.posMonitored << 20;
+log.log << "mise à jour de posMonitored"|;
+r.posMonitored << 20|;
 
-},
+sleep(4);
+s.get = function {
+    return 42
+}|;
 
-at (work.leave?)
-	r.stop;
-
-sleep(50s);
-work.stop;
+sleep(6);
+log.log << "STOP !!!"|;
+r.stop;

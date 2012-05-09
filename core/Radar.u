@@ -32,6 +32,7 @@ class Radar {
 	var _monitorLoop = Tag.new("Monitor Loop"); // tag contenant la loop de monitoring
 	
 	var posMonitored = []; // liste des positions surveillées
+    var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
 	var delay = 0.03s; // delai entre deux check des sonars
 	var range = 20; // distance minimale à l'adversaire que l'on accepte
 	var tmp;
@@ -52,9 +53,9 @@ class Radar {
 		_event = event;
 		
 		// dès que les positions surveillées changent, on fait des trucs
-		at (posMonitored->changed?)
+		at (posMonitored != _oldPosMonitored)
 		{
-			_logRadar.log << "posMonitored mis à jour";
+			_logRadar.log << "posMonitored mis à jour : " + posMonitored;
 			_logRadar.log << "recalcule des sonars à monitorer";
 			
 			_monitorLoop.stop;
@@ -65,9 +66,12 @@ class Radar {
 					_sonarsMonitored << sonar;
 			};
 			
-			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored;
+			_logRadar.log << "_sonarMonitored : " + _sonarsMonitored.asString;
 
-			_monitor
+            _oldPosMonitored = posMonitored.clone;
+
+            if (!posMonitored.empty)
+    			_monitor,
 		};
 
 		_logRadar.log << "init terminé"
@@ -88,7 +92,9 @@ class Radar {
 				tmp = sonar.first.get;
 				_logLoop.log << "distance = " + tmp;
 
-				_logLoop.log << "loop de mise à jour des valeurs";			
+				_logLoop.log << "loop de mise à jour des valeurs";
+
+                _monitorLoop.update:
 				every (delay) {
 					tmp = sonar.first.get;
 					_logLoop.log << "distance = " + tmp
@@ -115,6 +121,8 @@ class Radar {
 
 
 	function stop {
-		_monitorLoop.stop
+        _logLoop.log << "I want you to stop"; 
+		_monitorLoop.stop;
+        _monitorLoop.update.stop;
 	};
 }|;
