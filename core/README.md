@@ -25,6 +25,4 @@ On a une liste de positions surveillées donnée par l'utilisateur, ainsi qu'une
 
 On parcourt la liste des positions surveillées. Pour chaque position, on crée un nouveau groupe.
 
-S'il existe un sonar sur cette position, on l'ajoute au groupe (ce sera le sonar principal). On parcours ensuite la liste des sonars pour trouver des sonars dont la position cherchée est dans le champ de vision, et on les ajoute au groupe.
-
-S'il n'existe pas de sonar sur cette positon, on cherche tous les sonars dont la position est dans le champ de vision, et on les ajoute au groupe. On les trie ensuite du plus proche de la position au plus lointain, pour que le plus proche soit le principal.
+On cherche tous les sonars dont la position est dans le champ de vision, et on les ajoute au groupe. On trie ensuite le groupe du plus proche de la position au plus lointain, pour que le plus proche soit le principal et on l'ajoute à la liste des groupes. On passe à la position suivante.

@@ -62,36 +62,20 @@ class Radar {
                 // le premier est le sonar principal, les suivants servent à redonder
                 var sonarsGroup = [];
 
-                // on regarde s'il y a un sonar dans cette position
-                if (pos in _sonars.map(function (s) { s.pos }))
-        			for (var sonar in _sonars)
-    		    		if (sonar.pos == pos) {
-                            // on l'ajoute au groupe
-                            sonarsGroup << sonar;
+                // on cherche tous les sonars proches de la position
+                for (var sonar in _sonars)
+                    if (sonar.max >= pos || sonar.min <= pos)
+                        sonarsGroup << sonar;
 
-                            // on cherche d'autre sonars pour redonder
-                            for (var ssonar in _sonars)
-                                if (ssonar != sonar && (ssonar.max >= pos || ssonar.min <= pos))
-                                    sonarsGroup << ssonar;
-                        
-                            break;
-                        }
-                else {
-                    // s'il n'y a pas de sonar dans cette position,
-                    // on cherche tous les sonars proches
-                    for (var sonar in _sonars)
-                        if (sonar.max >= pos || sonar.min <= pos)
-                            sonarsGroup << sonar;
-
+                if (!sonarsGroup.empty) {
                     // on trie cette liste en mettant le plus proche en premier
                     sonarsGroup = sonarsGroup.sort(
                         function (a, b) {
                             (a.pos - pos).abs  < (b.pos - pos).abs
-                        })
-                };
+                        });
 
-                if (!sonarsGroup.empty)
-                    _sonarsMonitored << sonarsGroup;
+                    _sonarsMonitored << sonarsGroup
+                };
             };
 
             _oldPosMonitored = posMonitored.clone;
