@@ -64,7 +64,7 @@ class Radar {
 
                 // on cherche tous les sonars proches de la position
                 for (var sonar in _sonars)
-                    if (sonar.max >= pos && sonar.min <= pos)
+                    if (sonar.min <= pos && pos <= sonar.max)
                         sonarsGroup << sonar;
 
                 if (!sonarsGroup.empty) {
