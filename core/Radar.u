@@ -73,7 +73,8 @@ class Radar {
                             for (var ssonar in _sonars)
                                 if (ssonar != sonar && (ssonar.max >= pos || ssonar.min <= pos))
                                     sonarsGroup << ssonar;
-
+                        
+                            break;
                         }
                 else {
                     // s'il n'y a pas de sonar dans cette position,
