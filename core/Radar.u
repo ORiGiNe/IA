@@ -108,22 +108,16 @@ class Radar {
 			    	},
 
 				_logLoop.log << "démarrage du at";
-				var e;
-				at (distance < distMin) {
+				whenever (distance < distMin) {
                     // le sonar principale a détecté un adversaire
                     // on vérifie avec les sonars redondants
 
                     // nécéssaire, je ne sais pas pourquoi
                     var distMin = distMin;
                     if (sonar.foldl(function (a, b) { a && (b.get < distMin) }, true)) {
-    					_logLoop.log << "ALERTE !";
-	    				e = _event.trigger
+	    				_event!
                     };
 				}
-				onleave	{
-					_logLoop.log << "FIN DE L'ALERTE";
-					e.stop;
-				};
 			};
 		};
 	};
