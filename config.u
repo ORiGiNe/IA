@@ -1,0 +1,4 @@
+// La zone dans laquelle se trouve le robot au démarrage
+var Global.zone = "R";
+
+var tty = "/dev/ttyACM0";
