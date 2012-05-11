@@ -1,0 +1,26 @@
+class Sonar {
+	var _s; // le sonar
+	var pos; // sa position
+	var range; // son champ de vision
+
+	// constructeur
+	function init (s, pos, range) {
+		_s = s;
+		this.pos = pos;
+		this.range = range;
+	};
+	
+	function get {
+		return _s.get
+	};
+
+	// position min visible
+	function min {
+		return pos - range / 2;
+	};
+	
+	// posisiton max visible
+	function max {
+		return pos + range / 2;
+	};
+}|;

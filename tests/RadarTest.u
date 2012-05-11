@@ -1,3 +1,4 @@
+requireFile("../core/Sonar.u");
 requireFile("../core/Radar.u");
 
 var log = Logger.new("main")|;
@@ -19,15 +20,12 @@ var opponent = Event.new|;
 var r = Radar.new([Sonar.new(s,20,32)],opponent)|;
 
 log.log << "mise à jour de posMonitored"|;
-r.posMonitored = [20]|;
+r.posMonitored = [19]|;
 r.delay = 1s|;
 
 var state = "normal"|;
 
 at (opponent?)
-    log.log << "OPPONENT ???";
-
-whenever (opponent? ~ 2s)
     if (state != "crisis") {
 		    state = "crisis";
 		    log.log << "OPPONENT !!!";
@@ -64,7 +62,7 @@ s.get = function {
 
 sleep(3);
 log.log << "mise à jour de posMonitored"|;
-r.posMonitored = [32]|;
+r.posMonitored = [70]|;
 s.get = function {
     return 10
 }|;
