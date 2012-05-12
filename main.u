@@ -1,5 +1,7 @@
 requireFile("core/Sonar.u");
 requireFile("core/Radar.u");
+requireFile("core/FLogger.u");
+requireFile("core/Robot.u");
 
 requireFile("config.u");
 
@@ -15,68 +17,35 @@ requireFile("config.u");
 // est réellement dans la zone rouge ou dans la zone violette
 
 
-function forward (distance) {
-    for (var i in distance.abs) {
-        sleep(50ms);
-    };
-
-    echo(distance);
-    distance
-};
-
-function rotate (angle) {
-    if (zone == "R")
-        angle
-    else
-        -angle
-};
-
-function stop {
-    forward_t.stop(42);
-    current_t.stop;
-};
-
-
-// position en x et y sur la map (en cm)
-var x = 0;
-var y = 0;
-
 // les différents tag que l'on va utiliser
 var group_t = Tag.new("group"); 
 var alones_t = Tag.new("alones");
-var forward_t = group_t.clone;
+var forward_t = Tag.new("forward");
 
 // cette variable sera égal au tag en cours
 var current_t;
 
 
+var robot = Robot.new(0,0,0,"R");
+
+
 // les 4 CDs du bas plus le premier poussoir
 function group {
     current_t = group_t |
-    group_t: {
-        echo("x");$
-        x += { forward_t: forward(25) };
-        rotate(-90);
-        echo("y");
-        y += { forward_t: forward(175) };
-        echo(y);
-        echo("y");
-        y -= { forward_t: forward(-30) };
-        rotate(90);
-        echo("x");
-        x += { forward_t: forward(128) };
-        rotate(90);
-        echo("x");
-        y -= { forward_t: forward(38) };
-        rotate(90);
-        echo("x");
-        x -= { forward_t: forward(40) };
-        rotate(45);
-    };
-};
+    group_t:
+        do (robot) {
+            forward(25);
+            rotate(90);
+            forward(50);
+            rotate(90);
+            forward(25);
+        }|;
+}|;
 
 group,
-sleep(5);
-stop;
-echo("x = " + x);
-echo("y = " + y);
+sleep(3);
+{ robot.stop | current_t.stop };
+echo("x = " + robot._x);
+echo("y = " + robot._y);
+
+System.shutdown;
