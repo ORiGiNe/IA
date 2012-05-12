@@ -79,3 +79,5 @@ s.get = function {
 sleep(6);
 log.log << "STOP !!!"|;
 r.stop;
+
+System.shutdown;
