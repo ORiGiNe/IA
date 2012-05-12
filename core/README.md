@@ -1,8 +1,20 @@
+# Sonar
+
+## Usage
+
+ * _Sonar.new(captor, pos, range)_
+  * _captor_ : doit avoir une méthode _get()_
+  * _pos_ : la position du sonar
+  * _range_ : le champ de vision du sonar
+ * _Sonar.get_ : pour checker le sonar
+ * _Sonar.min_ : position minimum visible par le sonar
+ * _Sonar.max_ : position maximum visible par le sonar
+
 # Radar
 
 ## Usage
 
- * Radar.new(sonars, event)_
+ * _Radar.new(sonars, event)_
    * _sonars_ : liste d'objects _Sonar_
    * _event_ : événement à émetter
  * _Radar.posMonitored_ : liste des positions surveillées (en rapport avec ce que vous avez mis dans Sonar.pos)
