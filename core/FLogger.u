@@ -1,0 +1,49 @@
+/* Author : Alexandre Morignot <erdnaxeli@gmail.com>
+ * 05/12/2012
+ *
+ * FLogger is a minimalistic copy of Logger but logging to a file
+ */
+
+var FLogger = do (Finalizable.new) {
+    var _path;
+    var _file;
+    var _stream;
+
+    var _title;
+
+
+    function init (title, path) {
+        // construction du titre
+        _title = "[";
+
+        for ((23 - title.length) / 2 - 1)
+            _title += " ";
+
+        _title += title;
+
+        for (24 - _title.length)
+            _title += " ";
+
+        _title += "]";
+
+        
+        _path = Path.new(path);
+
+        if (_path.exists)
+            _file = File.new(_path)
+        else
+            _file = File.create(_path);
+
+        _stream = OutputStream.new(_file);
+        
+        echo("!!!!!!!!!!!!");
+    };
+
+    function '<<' (string) { 
+        _stream << _title + " " + string + "\n"|;
+    };
+
+    function finalize {
+        _stream.close;
+    };
+}|;
