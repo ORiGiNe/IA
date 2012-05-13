@@ -10,7 +10,7 @@ class PathFinder {
     var _start; // point de départ
     var _goal; // point visé
     var _closedSet; // noeuds par lesquels ont est déjà passé 
-    var _openSet; // noeuds étudiés et disponibles 
+    var _openSet; // noeuds étudiés et disponibles
 
     function init (map) {
         _map = map;
@@ -22,26 +22,6 @@ class PathFinder {
      */
     function weight (n) {
         var manhattan = (n.dot.x - _goal.x).abs + (n.dot.y - _goal.y).abs;
-
-        var malusRotation = 0;
-
-        /* si on a au moins deux antécédents (nécéssaires pour calculer
-         * l'ancienne direction
-         */
-        if (!n.parent.isNil && n.parent != _start) {
-            // on regarde si la position a changée
-            var parent = n.parent;
-            var gparent = _closedSet[parent.x][parent.y].parent;
-
-            // c'est un simple calcul de vecteur
-            var oldDirection = Dot.new(parent.x - gparent.x, parent.y - gparent.y);
-            var newDirection = Dot.new(n.dot.x - parent.x, n.dot.y - parent.y);
-
-            if (oldDirection != newDirection)
-                malusRotation = 50;
-        };
-        
-        manhattan + malusRotation;
     };
 
 
@@ -116,6 +96,7 @@ class PathFinder {
 
     // trouve le chemin de start à goal dans la map _map avec A*
     function pathTo (start, goal) {
+        operations = 0;
         _start = start;
         _goal = goal;
 
@@ -192,7 +173,7 @@ class PathFinder {
                     neighbour.parent = current.dot;
 
                     // calcul du poids du noeud étudié
-                    neighbour.weight = weight(neighbour);// + current.distance + 1;
+                    neighbour.weight = weight(neighbour) + current.distance + 1;
                     neighbour.distance = current.distance + 1;
 
                     // on insère le noeud dans la liste des noeuds disponibles
