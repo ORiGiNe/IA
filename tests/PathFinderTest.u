@@ -3,9 +3,60 @@ load("../core/Dot.u")|;
 load("../core/Node.u")|;
 load("../core/PathFinder.u")|;
 
-var m = Matrix.new(10,10,0)|;
-m[5][5] = 1;
-m[5][3] = 1;
+var m = Matrix.new(300,200,0)|;
+
+// bordure d'obstacle
+for (var i in 300) {
+    m[i][0] = 1;
+    m[i][199] = 1;
+};
+
+for (var j in 200) {
+    m[0][j] = 1;
+    m[299][j] = 1;
+};
+
+
+for (var i in 20) {
+    for (var j in 20) {
+        m[40+i][30+j] = 1;
+    };
+};
+
+for (var i in 100) {
+    for (var j in 50) {
+        m[100+i][75+j] = 1;
+    };
+};
+
+/*for (var i in 5) {
+    for (var j in 75) {
+        m[150+i][125+j] = 1;
+    };
+};*/
+
+echo("start");
 var pf = PathFinder.new(m)|;
-pf.pathTo(Dot.new(0,0), Dot.new(9,9));
-echo("DONE !");
+var path = pf.pathTo(Dot.new(0,0), Dot.new(200,150));
+
+echo(pf.operations);
+
+var dots = pf._openSet.map(function (v) { v.dot });
+
+for (var i in 300) {
+    var s = [];
+    for (var j in 200) {
+        if (Dot.new(i,j) in path)
+            s << "@"
+        else if (m[i][j] == 1)
+            s << "+"
+        else if (!pf._closedSet[i][j].isNil || Dot.new(i,j) in dots)
+            s << ":"
+        else
+            s << " ";
+    };
+    echo(s.join);
+};
+
+
+System.shutdown;

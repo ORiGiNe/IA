@@ -1,6 +1,6 @@
 /* PathFinder
  *
- * Trouve un chemin dans une grille (map)
+ * Trouve un chemin dans une grille (_map)
  * Les obstacles sont représenté par la valeur 1
  * L'algorithme utilisé est A*
  */
@@ -13,15 +13,14 @@ class PathFinder {
     var _openSet; // noeuds étudiés et disponibles
 
     function init (map) {
+        // la carte DOIT contenir une bordure d'obstacle
         _map = map;
     };
 
 
-    /* calcul le poid d'un noeud
-     * on utilise la distance de manhattan ainsi qu'un malus en cas de rotation
-     */
+    // retourne la distance de manhattan entre deux points
     function weight (n) {
-        var manhattan = (n.dot.x - _goal.x).abs + (n.dot.y - _goal.y).abs;
+        (n.dot.x - _goal.x).abs + (n.dot.y - _goal.y).abs;
     };
 
 
@@ -94,17 +93,166 @@ class PathFinder {
     };
 
 
+    // retourne les voisins (après trie) du noeud n
+    function getNeighbours (n) {
+        var neighbours = [];
+        var neighbour = Node.new;
+        neighbour.parent = n.dot;
+
+        if (!n.parent.isNil) {
+            var direction = Dot.new(n.dot.x - n.parent.x, n.dot.y - n.parent.y);
+
+            // si on se délpace horizontalement
+            if (direction.y == 0) {
+                // on pars un coup par le haut, un coup par le bas
+                for (var i in [-1, 1]) {
+                    neighbour.dot = n.parent;
+
+                    // 1er voisin
+                    neighbour.dot.y += i;
+
+                    // on vérifie que ce n'est pas un obstacle
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
+                        // si c'est le cas, les voisins 2 et 3 sont forcés
+                        neighbour.dot.x += direction.x;
+                        neighbours << neighbour;
+                        neighbour.dot.x += direction.x;
+                        neighbours << neighbour;
+                    }
+                    else {
+                        // 2ème voisin
+                        neighbour.dot.x += direction.x;
+
+                        // si c'en un obstacle, le 3ème voisin est forcé
+                        if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
+                            neighbour.dot.x += direction.x;
+                            neighbours << neighbour;
+                        };
+                    };
+                };
+
+                // le 7ème noeud est soit un obstacle, soit un voisin
+                neighbour.dot = n.parent;
+                neighbour.x += 2 * direction.x;
+
+                if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                    neighbours << neighbour;
+            }
+            // si on se délpace verticalement
+            else if (direction.x == 0) {
+                // on pars un coup par la droite, un coup par la gauche
+                for (var i in [-1, 1]) {
+                    neighbour.dot = n.parent;
+
+                    // 1er voisin
+                    neighbour.dot.x += i;
+
+                    // on vérifie que ce n'est pas un obstacle
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
+                        // si c'est le cas, les voisins 2 et 3 sont forcés
+                        neighbour.dot.y += direction.y;
+                        neighbours << neighbour;
+                        neighbour.dot.y += direction.y;
+                        neighbours << neighbour;
+                    }
+                    else {
+                        // 2ème voisin
+                        neighbour.dot.y += direction.y;
+
+                        // si c'en un obstacle, le 3ème voisin est forcé
+                        if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
+                            neighbour.dot.y += direction.y;
+                            neighbours << neighbour;
+                        };
+                    };
+                };
+
+                // le 7ème noeud est soit un obstacle, soit un voisin
+                neighbour.dot = n.parent;
+                neighbour.y += 2 * direction.y;
+
+                if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                    neighbours << neighbour;
+            }
+            // si on se déplace en diagonale
+            else {
+                // on part du 1er côté
+                neighbour.dot = n.parent;
+
+                // 1er voisin
+                neighbour.dot.x += direction.x;
+
+                // si c'est un obstacle, le 2ème voisin est forcé
+                if (_map[neighbour.dot.x][neighbour.dot.y] == 0) {
+                    // 2ème voisin
+                    neighbour.dot.x += direction.x;
+
+                    // on vérifie que ce n'est pas un obstacle
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
+                        neighbours << neighbour;
+
+                    // celui-ci est soit un obstacle, soit un voisin naturel
+                    neighbour.dot.y += direction.y;
+                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
+                        neighbours << neighbour;
+                 };
+
+                // on part du 2nd côté
+                neighbour.dot = n.parent;
+
+                // 1er voisin
+                neighbour.dot.y += direction.y;
+
+                // si c'est un obstacle, le 2ème voisin est forcé
+                if (_map[neighbour.dot.x][neighbour.dot.y] == 0) {
+                    // 2ème voisin
+                    neighbour.dot.y += direction.y;
+
+                    // on vérifie que ce n'est pas un obstacle
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
+                        neighbours << neighbour;
+                    
+                    // celui-ci est soit un obstacle, soit un voisin naturel
+                    neighbour.dot.x += direction.x;
+                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
+                        neighbours << neighbour;
+
+                    // enfin le dernier, soit obstacle soit voisin naturel
+                    neighbour.dot.x += direction.x;
+                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
+                        neighbours << neighbour;
+                };
+            };
+        }
+        else {
+            /* si on a pas de parent, c'est qu'on est au départ
+             * on garde tous les voisins
+             */
+            for (var i in [-1,0,1]) {
+                for (var j in [-1,0,1]) {
+                    // on vérifie qu'on est bien sur un voisin
+                    if (i != 0 || j != 0) {
+                        neighbour.dot = n.dot + Dot.new(i,j);
+
+                        // on vérifie que ce n'est pas un obstacle
+                        if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
+                            neighbours << neighbour;
+                    };
+                };
+            };
+        };
+
+        neighbours;
+    };
+
+
     // trouve le chemin de start à goal dans la map _map avec A*
     function pathTo (start, goal) {
-        operations = 0;
         _start = start;
         _goal = goal;
 
         // noeud où l'on se situe
         var current = Node.new;
-
-        // noeud voision que l'on étudie
-        var neighbour;
 
         /* initialisation :
          * on part du point de départ (seems legit)
@@ -143,46 +291,8 @@ class PathFinder {
              */
             _closedSet[current.dot.x][current.dot.y] = current;
 
-             // on étudie ses voisins
-            for (var i in [-1,0,1]) {
-                for (var j in [-1,0,1]) {
-                    // on vérifie qu'on est bien sur un noeud voisin
-                    if (i == 0 && j == 0)
-                        continue;
-
-                    neighbour = Node.new;
-                    neighbour.dot = current.dot + Dot.new(i,j);
-
-                    // on vérifie qu'on ne sort pas de la map
-                    if (neighbour.dot.x < 0 || neighbour.dot.y < 0 ||
-                        neighbour.dot.x >= _map.x || neighbour.dot.y >= _map.y) {
-                        continue;
-                    };
-                   
-                    // on vérifie que ce n'est pas un obstacle
-                    if (_map[neighbour.dot.x][neighbour.dot.y] == 1)
-                        continue;
-
-                    // on regarde si on est déjà passé par ce noeud
-                    if (!_closedSet[neighbour.dot.x][neighbour.dot.y].isNil)
-                        continue;
-
-                    /* on enregsitre par où on a accédé à ce noeud afin de
-                     * pouvoir remonter le chemin plus tard
-                     */
-                    neighbour.parent = current.dot;
-
-                    // calcul du poids du noeud étudié
-                    neighbour.weight = weight(neighbour) + current.distance + 1;
-                    neighbour.distance = current.distance + 1;
-
-                    // on insère le noeud dans la liste des noeuds disponibles
-                    if (_openSet.empty)
-                        _openSet = [neighbour]
-                    else
-                        insertOpenSet(neighbour);
-                };
-            };
+            // on cherche ses voisins
+            var neighbours = getNeighbours(current);
         };
 
         // on a épuisé les possibilités, il n'existe pas de chemin
