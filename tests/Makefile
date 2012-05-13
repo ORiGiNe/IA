@@ -6,3 +6,6 @@ uobjects:
 
 radar: RadarTest.u uobjects
 	$(URBI) $(URBI_DIR)/ULib.so -- $<
+
+path: PathFindingTest.u
+	$(URBI) -- $<

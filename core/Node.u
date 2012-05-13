@@ -1,0 +1,6 @@
+class Object.Node {
+    var dot = nil;
+    var parent = nil;
+    var weight = nil;
+    var distance = nil;
+};

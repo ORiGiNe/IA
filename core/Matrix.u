@@ -1,23 +1,29 @@
-class Matrix {
+class Object.Matrix {
     // la matrix, une liste de liste
-    var matrix = [];
+    var matrix;
+    var x;
+    var y;
 
     function init (x, y, v) {
+        matrix = [];
+        this.x = x;
+        this.y = y;
+
         for (var i in x) {
-            matrix << [];
+            this.matrix << [];
 
             for (var j in y)
-                matrix[i] << v;
+                this.matrix[i] << v;
        };
     };
 
    
     // sucre syntaxique
     function '[]' (i) {
-        matrix[i];
+        this.matrix[i];
     };
 
     function asString {
-        matrix.asString;
+        this.matrix.asString;
     };
 };

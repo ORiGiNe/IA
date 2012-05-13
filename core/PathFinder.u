@@ -1,0 +1,142 @@
+class PathFinder {
+    var _path = [];
+    var _map;
+    var _start;
+    var _goal;
+    var _closedSet;
+    var _openSet;
+
+    function init (map) {
+        _map = map;
+    };
+
+
+    /* calcul le poid d'un noeud
+     * on utilise la distance de manhattan
+     */
+    function weight (n) {
+        (n.x - _goal.x).abs + (n.y - _goal.y).abs;
+    };
+
+
+    /* insère un noeud dans _openSet
+     *
+     * s'il est déjà dedans, on le met à jour si son nouveau poids est meilleur
+     * sinon on l'insère en gardant la liste triée
+     */
+    function insertOpenSet (n) {
+        var i = 0;
+        for (var e in _openSet) {
+            if (e.dot == n.dot)
+                if (e.weight < n.weight) {
+                    _openSet = _openSet.filter(
+                        function (v) {
+                            v.dot != n.dot;
+                        });
+                    break;
+                };
+
+            i++;
+        };
+
+        i = 0;
+        for (var e in _openSet) {
+            if (e.weight >= n.weight) {
+                _openSet.insert(i, n);
+                //echo("inserted");
+                break;
+            };
+        };
+    };
+
+
+    function getPath {
+        var path = [];
+        var current = Node.new;
+        current.dot = _goal;
+
+        while (current.dot != _start) {
+            echo ("je remonte depuis : " + current.dot.x + ", " + current.dot.y);
+            path << current.dot;
+            current.dot = _closedSet[current.dot.x][current.dot.y].parent;
+            if (current.isNil) echo ("echec");
+        };
+
+        path.reverse;
+    };
+
+
+    function pathTo (start, goal) {
+        _start = start;
+        _goal = goal;
+
+        var current = Node.new;
+        var neighbour;
+       
+        current.dot = _start;
+        current.weight = weight(current.dot);
+        current.distance = 0;
+
+        _openSet = [current];
+        _closedSet = Matrix.new(_map.x, _map.y, nil);
+
+        while (!_openSet.empty) {
+            current = _openSet.front;
+            echo("I'm on : " + current.dot);
+
+            echo ("je vais à " + _goal);
+            if (current.dot == _goal) {
+                echo("OUAIIIIIIIIIS");
+                _closedSet[_goal.x][_goal.y] = current;
+                return getPath;
+            };
+
+            _openSet = _openSet.tail;
+            //echo ("_openSet : " + _openSet);
+
+            for (var i in [-1,1]) {
+                for (var j in [-1, 1]) {
+                    neighbour = Node.new;
+                    neighbour.dot = current.dot + Dot.new(i,j);
+                    //echo("Evaluate : " + neighbour.dot);
+
+                    // on vérifie qu'on ne sort pas de la map
+                    if (neighbour.dot.x < 0 || neighbour.dot.y < 0 ||
+                        neighbour.dot.x >= _map.x || neighbour.dot.y >= _map.y) {
+                        //echo ("I'm out");
+                        continue;
+                    };
+                   
+                    // on vérifie que ce n'est pas un obstacle
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 1)
+                        continue;
+
+                    // on regarde si on est déjà passé par ce noeud
+                    if (!_closedSet[neighbour.dot.x][neighbour.dot.y].isNil) {
+                        //echo ("Already done");
+                        continue;
+                    };
+
+                    neighbour.weight = weight(neighbour.dot) + current.distance + 1;
+                    neighbour.distance = current.distance + 1;
+                    neighbour.parent = current.dot;
+
+                    if (_openSet.empty) {
+                        //echo ("tu vois");
+                        _openSet = [neighbour]
+                    }
+                    else {
+                        //echo ("pas cette fois");
+                        insertOpenSet(neighbour);
+                    };
+                };
+            };
+
+            //echo ("On enregistre le current");
+            _closedSet[current.dot.x][current.dot.y] = current;
+        };
+
+        // on a épuisé les possibilités, pas de chemn
+        [];
+    };
+};

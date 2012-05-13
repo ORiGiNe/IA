@@ -1,4 +1,4 @@
-class Dot {
+class Object.Dot {
     var x = nil;
     var y = nil;
 
@@ -10,6 +10,15 @@ class Dot {
     function '+' (b) {
         this.new(x + b.x, y + b.y);
     };
+
+    function '==' (b) {
+        this.x == b.x && this.y == b.y;
+    };
+    
+    function '!=' (b) {
+        this.x != b.x || this.y != b.y;
+    };
+
 
     function asString {
         "(" + x + ", " + y + ")";

@@ -1,0 +1,10 @@
+load("../core/Matrix.u")|;
+load("../core/Dot.u")|;
+load("../core/Node.u")|;
+load("../core/PathFinder.u")|;
+
+var m = Matrix.new(10,10,0)|;
+m[5][5] = 1;
+var pf = PathFinder.new(m)|;
+pf.pathTo(Dot.new(0,0), Dot.new(9,9));
+echo("DONE !");
