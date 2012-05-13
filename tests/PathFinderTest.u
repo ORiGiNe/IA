@@ -5,6 +5,7 @@ load("../core/PathFinder.u")|;
 
 var m = Matrix.new(10,10,0)|;
 m[5][5] = 1;
+m[5][3] = 1;
 var pf = PathFinder.new(m)|;
 pf.pathTo(Dot.new(0,0), Dot.new(9,9));
 echo("DONE !");
