@@ -1,0 +1,23 @@
+class Matrix {
+    // la matrix, une liste de liste
+    var matrix = [];
+
+    function init (x, y, v) {
+        for (var i in x) {
+            matrix << [];
+
+            for (var j in y)
+                matrix[i] << v;
+       };
+    };
+
+   
+    // sucre syntaxique
+    function '[]' (i) {
+        matrix[i];
+    };
+
+    function asString {
+        matrix.asString;
+    };
+};
