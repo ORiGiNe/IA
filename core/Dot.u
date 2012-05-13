@@ -1,0 +1,17 @@
+class Dot {
+    var x = nil;
+    var y = nil;
+
+    function init (a, b) {
+        x = a;
+        y = b;
+    };
+
+    function '+' (b) {
+        this.new(x + b.x, y + b.y);
+    };
+
+    function asString {
+        "(" + x + ", " + y + ")";
+    };
+};
