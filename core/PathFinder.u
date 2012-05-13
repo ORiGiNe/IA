@@ -94,8 +94,12 @@ class PathFinder {
             _openSet = _openSet.tail;
             //echo ("_openSet : " + _openSet);
 
-            for (var i in [-1,1]) {
-                for (var j in [-1, 1]) {
+            for (var i in [-1,0,1]) {
+                for (var j in [-1,0,1]) {
+                    // on vérifie qu'on est bien sur un noeud voisin
+                    if (i == 0 && j == 0)
+                        continue;
+
                     neighbour = Node.new;
                     neighbour.dot = current.dot + Dot.new(i,j);
                     //echo("Evaluate : " + neighbour.dot);
