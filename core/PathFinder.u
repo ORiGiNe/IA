@@ -18,10 +18,30 @@ class PathFinder {
 
 
     /* calcul le poid d'un noeud
-     * on utilise la distance de manhattan
+     * on utilise la distance de manhattan ainsi qu'un malus en cas de rotation
      */
     function weight (n) {
-        (n.x - _goal.x).abs + (n.y - _goal.y).abs;
+        var manhattan = (n.dot.x - _goal.x).abs + (n.dot.y - _goal.y).abs;
+
+        var malusRotation = 0;
+
+        /* si on a au moins deux antécédents (nécéssaires pour calculer
+         * l'ancienne direction
+         */
+        if (!n.parent.isNil && n.parent != _start) {
+            // on regarde si la position a changée
+            var parent = n.parent;
+            var gparent = _closedSet[parent.x][parent.y].parent;
+
+            // c'est un simple calcul de vecteur
+            var oldDirection = Dot.new(parent.x - gparent.x, parent.y - gparent.y);
+            var newDirection = Dot.new(n.dot.x - parent.x, n.dot.y - parent.y);
+
+            if (oldDirection != newDirection)
+                malusRotation = 50;
+        };
+        
+        manhattan + malusRotation;
     };
 
 
@@ -66,6 +86,8 @@ class PathFinder {
                 _openSet.insert(i, n);
                 break;
             };
+
+            i++;
         };
     };
 
@@ -81,6 +103,9 @@ class PathFinder {
             path << current.dot;
             current.dot = _closedSet[current.dot.x][current.dot.y].parent;
         };
+
+        // ne pas oublier le point de départ
+        path << _start;
 
         /* on a remonté le chemin depuis la fin
          * il faut donc l'inverser
@@ -104,7 +129,7 @@ class PathFinder {
          * on part du point de départ (seems legit)
          */
         current.dot = _start;
-        current.weight = weight(current.dot);
+        current.weight = weight(current);
         current.distance = 0;
 
         /* _openSet est une liste de Node, tandis que _closedSet est une map
@@ -132,7 +157,12 @@ class PathFinder {
             // on supprime le noeud sur lequel on est des noeuds disponibles
             _openSet = _openSet.tail;
 
-            // on étudie ses voisins
+            /* on ajoute le noeuds actuel dans la liste des noeuds par lesquels
+             * on est déjà passé
+             */
+            _closedSet[current.dot.x][current.dot.y] = current;
+
+             // on étudie ses voisins
             for (var i in [-1,0,1]) {
                 for (var j in [-1,0,1]) {
                     // on vérifie qu'on est bien sur un noeud voisin
@@ -156,14 +186,14 @@ class PathFinder {
                     if (!_closedSet[neighbour.dot.x][neighbour.dot.y].isNil)
                         continue;
 
-                    // calcul du poids du noeud étudié
-                    neighbour.weight = weight(neighbour.dot) + current.distance + 1;
-                    neighbour.distance = current.distance + 1;
-
                     /* on enregsitre par où on a accédé à ce noeud afin de
                      * pouvoir remonter le chemin plus tard
                      */
                     neighbour.parent = current.dot;
+
+                    // calcul du poids du noeud étudié
+                    neighbour.weight = weight(neighbour);// + current.distance + 1;
+                    neighbour.distance = current.distance + 1;
 
                     // on insère le noeud dans la liste des noeuds disponibles
                     if (_openSet.empty)
@@ -172,11 +202,6 @@ class PathFinder {
                         insertOpenSet(neighbour);
                 };
             };
-
-            /* on ajoute le noeuds actuel dans la liste des noeuds par lesquels
-             * on est déjà passé
-             */
-            _closedSet[current.dot.x][current.dot.y] = current;
         };
 
         // on a épuisé les possibilités, il n'existe pas de chemin
