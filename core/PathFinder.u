@@ -113,20 +113,28 @@ class PathFinder {
 
                     // on vérifie que ce n'est pas un obstacle
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
-                        // si c'est le cas, les voisins 2 et 3 sont forcés
+                        /* si c'est le cas, les voisins 2 et 3 sont forcés
+			 * (si ce ne sont pas des obstacles)
+			 */
                         neighbour.dot.x += direction.x;
-                        neighbours << neighbour;
+			if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+	                        neighbours << neighbour;
+
                         neighbour.dot.x += direction.x;
-                        neighbours << neighbour;
+                        if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                                neighbours << neighbour;
                     }
                     else {
                         // 2ème voisin
                         neighbour.dot.x += direction.x;
 
-                        // si c'en un obstacle, le 3ème voisin est forcé
+                        /* si c'est un obstacle, le 3ème voisin est forcé
+			 * (si ce n'est pas un obstacle
+			 */
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.x += direction.x;
-                            neighbours << neighbour;
+	                    if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                                neighbours << neighbour;
                         };
                     };
                 };
@@ -151,9 +159,12 @@ class PathFinder {
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                         // si c'est le cas, les voisins 2 et 3 sont forcés
                         neighbour.dot.y += direction.y;
-                        neighbours << neighbour;
+                        if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                                neighbours << neighbour;
+
                         neighbour.dot.y += direction.y;
-                        neighbours << neighbour;
+                        if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                                neighbours << neighbour;
                     }
                     else {
                         // 2ème voisin
@@ -162,7 +173,8 @@ class PathFinder {
                         // si c'en un obstacle, le 3ème voisin est forcé
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.y += direction.y;
-                            neighbours << neighbour;
+                            if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                                neighbours << neighbour;
                         };
                     };
                 };
@@ -191,7 +203,7 @@ class PathFinder {
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
                         neighbours << neighbour;
 
-                    // celui-ci est soit un obstacle, soit un voisin naturel
+                    // le suivant est soit un obstacle, soit un voisin naturel
                     neighbour.dot.y += direction.y;
                     if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
                         neighbours << neighbour;
