@@ -37,9 +37,7 @@ for (var i in 100) {
 
 echo("start");
 var pf = PathFinder.new(m)|;
-var path = pf.pathTo(Dot.new(0,0), Dot.new(200,150));
-
-echo(pf.operations);
+var path = pf.pathTo(Dot.new(1,1), Dot.new(200,150));
 
 var dots = pf._openSet.map(function (v) { v.dot });
 

@@ -97,7 +97,8 @@ class PathFinder {
     function getNeighbours (n) {
         var neighbours = [];
         var neighbour = Node.new;
-        neighbour.parent = n.dot;
+		neighbour.parent = n.dot;
+		echo("My father is " + neighbour.parent);
 
         if (!n.parent.isNil) {
             var direction = Dot.new(n.dot.x - n.parent.x, n.dot.y - n.parent.y);
@@ -114,15 +115,15 @@ class PathFinder {
                     // on vérifie que ce n'est pas un obstacle
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                         /* si c'est le cas, les voisins 2 et 3 sont forcés
-			 * (si ce ne sont pas des obstacles)
-			 */
+						 * (si ce ne sont pas des obstacles)
+						 */
                         neighbour.dot.x += direction.x;
-			if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-	                        neighbours << neighbour;
+						if (_map[neighbour.dot.x][neighbour.dot.y] != 1) 
+							neighbours << neighbour.copy;
 
                         neighbour.dot.x += direction.x;
                         if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                                neighbours << neighbour;
+                                neighbours << neighbour.copy;
                     }
                     else {
                         // 2ème voisin
@@ -134,7 +135,7 @@ class PathFinder {
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.x += direction.x;
 	                    if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                                neighbours << neighbour;
+                                neighbours << neighbour.copy;
                         };
                     };
                 };
@@ -160,11 +161,11 @@ class PathFinder {
                         // si c'est le cas, les voisins 2 et 3 sont forcés
                         neighbour.dot.y += direction.y;
                         if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                                neighbours << neighbour;
+                                neighbours << neighbour.copy;
 
                         neighbour.dot.y += direction.y;
                         if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                                neighbours << neighbour;
+                                neighbours << neighbour.copy;
                     }
                     else {
                         // 2ème voisin
@@ -174,7 +175,7 @@ class PathFinder {
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.y += direction.y;
                             if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                                neighbours << neighbour;
+                                neighbours << neighbour.copy;
                         };
                     };
                 };
@@ -184,7 +185,7 @@ class PathFinder {
                 neighbour.y += 2 * direction.y;
 
                 if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
-                    neighbours << neighbour;
+                    neighbours << neighbour.copy;
             }
             // si on se déplace en diagonale
             else {
@@ -201,12 +202,12 @@ class PathFinder {
 
                     // on vérifie que ce n'est pas un obstacle
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
-                        neighbours << neighbour;
+                        neighbours << neighbour.copy;
 
                     // le suivant est soit un obstacle, soit un voisin naturel
                     neighbour.dot.y += direction.y;
                     if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour;
+                        neighbours << neighbour.copy;
                  };
 
                 // on part du 2nd côté
@@ -222,17 +223,17 @@ class PathFinder {
 
                     // on vérifie que ce n'est pas un obstacle
                     if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
-                        neighbours << neighbour;
+                        neighbours << neighbour.copy;
                     
                     // celui-ci est soit un obstacle, soit un voisin naturel
                     neighbour.dot.x += direction.x;
                     if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour;
+                        neighbours << neighbour.copy;
 
                     // enfin le dernier, soit obstacle soit voisin naturel
                     neighbour.dot.x += direction.x;
                     if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour;
+                        neighbours << neighbour.copy;
                 };
             };
         }
@@ -248,7 +249,7 @@ class PathFinder {
 
                         // on vérifie que ce n'est pas un obstacle
                         if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                            neighbours << neighbour;
+                            neighbours << neighbour.copy;
                     };
                 };
             };
@@ -256,6 +257,113 @@ class PathFinder {
 
         neighbours;
     };
+
+
+	// permet de savoir si n à des voisins forcés
+	function hasForcedNeighbours(n) {
+		var node = n.parent;
+		var direction = Dot.new(n.dot.x - node.x, n.dot.y - node.y);
+
+		// si on se déplace verticalement
+		if (direction.x == 0)
+			// on pars d'abord par la gauche, puis par la droite
+			for (i in [-1, 1]) {
+				// on se décale dans la direction en cours
+				node.dot.x += i;
+
+				// si le 2ème voisin est un obstacle
+				if (_map[node.x][node.y + direction.y] == 1) {
+					// si le 3ème voisin n'est pas obstacle
+					if (_map[node.x][node.y + 2 * direction.y] != 1)
+						// alors c'est un voisin forcé
+						return true;
+				}
+				// sinon si le 1er voisin est un obstacle
+				else if (_map[node.x][node.y] != 1)
+					// alors le 2ème voisin est un obstacle
+					return true;
+			}
+		// si on se déplace horizontalement
+		else if (direction.y == 0)
+			for (var i in [-1, 1]) {
+                node.y += i;
+                
+                // si le 2ème voisin est un obstacle
+                if (_map[node.x + direction.x][node.y] == 1) {
+                    // si le 3ème voisin n'est pas obstacle
+                    if (_map[node.x + 2 * direction.x][node.y] != 1)
+                        // alors c'est un voisin forcé
+                        return true;
+		}
+                // sinon si le 1er voisin est un obstacle
+                else if (_map[node.x][node.y] != 1)
+                    // alors le 2ème voisin est un obstacle
+                    return true;
+			}
+		// si on se déplace en diagonale
+		else
+			if (_map[node.x + direction.x][node.y] == 1 && _map[node.x + 2 * direction.x][node.y] == 0)
+				// si le 1er voisin est un obstacle et pas le 3ème, ce dernier est forcé
+				return true
+			else if (_map[node.x][node.y + direction.y] == 1 && _map[node.x][node.y + 2 * direction.y] == 0)
+				// idem dans l'autre direction
+				return true;
+
+		false;
+	};
+
+
+	// trouve à partir de n le prochain point intéressant dans la direction d
+	function jump (n, d) {
+		echo("Jump from " + n.dot + " to …");	
+		var node = n.clone;
+		node.dot += d;
+
+		/* si c'est un obstacle, ce n'est pas vraiment intéressant (se prendre des
+		 * murs !)
+		 */
+		if (_map[node.dot.x][node.dot.y] == 0)
+			return nil;
+
+		// si c'est le but, c'est plutôt intéressant (enfin il paraît …)
+		if (node.dot == _goal)
+			return node;
+
+		// s'il a au moins un voisin forcé, il est intéressant
+		if (hasForcedNeighbours(n))
+			{ echo (n.dot);
+			return n; };
+
+		/* si on arrive en diagonal, en check à la verticale et à l'horizontale
+		 * (vers l'avant toujours)
+		 */
+		if (d.x != 0 && d.y != 0)
+			for (2) {
+				if ( !jump(node, Dot.new(d.x,0)).isNil || !jump(node, Dot.new(0,d.y).isNil))
+					{ echo(n.dot);
+					return n;};
+			};
+
+		return jump(node, d);
+	};
+
+
+	// obtient à partir d'une liste de voisins les successeurs du noeud n
+	function identifySuccessors(neighbours, n) {
+		var successors = [];
+
+		for (var node in neighbours) {
+			echo ("Is " + node.dot + " a successor ?");
+			var direction = Dot.new(node.dot.x - n.dot.x, node.dot.y - n.dot.y);
+			var successor = jump(node, direction);
+
+			if (!successor.isNil) {
+				echo("yes !");
+				successors << node };
+		};
+
+		successors;
+	};
 
 
     // trouve le chemin de start à goal dans la map _map avec A*
@@ -305,6 +413,16 @@ class PathFinder {
 
             // on cherche ses voisins
             var neighbours = getNeighbours(current);
+			echo ("neighbours = " + neighbours);
+		    var successors = identifySuccessors(neighbours, current);
+			echo ("successors = " + successors);
+
+			for (var node in successors) {
+				node.parent = current.dot;
+				node.distance = current.distance + 1;
+				node.weight = node.distance + weight(node);
+				_openSet << node;
+			};
         };
 
         // on a épuisé les possibilités, il n'existe pas de chemin

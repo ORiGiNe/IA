@@ -3,4 +3,16 @@ class Object.Node {
     var parent = nil;
     var weight = nil;
     var distance = nil;
+
+	/* we need to copy immediatly the object, and not copy-on-write it (witch is
+	 * the default behaviours in urbi)
+	 */
+	function copy {
+		var copy = this.new;
+		copy.dot = this.dot;
+		copy.parent = this.parent;
+		copy.weight = this.weight;
+		copy.distance = this.distance;
+		copy;
+	};
 };
