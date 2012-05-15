@@ -5,27 +5,41 @@ var log = Logger.new("main")|;
 
 log.log << "Start"|;
 
-//var g = UGaop.new("/dev/ttyUSB1");
-//var s = UCapteur.new(4,g);
-//g.initialise;
+var g = UGaop.new("/dev/ttyACM0");
+var s1 = UCapteur.new(1,g);
+var s2 = UCapteur.new(2,g);
+var s3 = UCapteur.new(3,g);
+var s4 = UCapteur.new(4,g);
+var s5 = UCapteur.new(5,g);
+var s6 = UCapteur.new(6,g);
+var s7 = UCapteur.new(7,g);
+g.initialise;
 
-var s = Object.new|;
+var ss1 = Sonar.new(s1,180,35);
+var ss2 = Sonar.new(s2,270,35);
+var ss3 = Sonar.new(s3,0,35);
+var ss4 = Sonar.new(s4,90,35);
+var ss5 = Sonar.new(s5,180,35);
+var ss6 = Sonar.new(s6,315,35);
+var ss7 = Sonar.new(s7,45,35);
+
+/*var s = Object.new|;
 function s.get
 {
     return 30
-}|;
+}|;*/
 
 var opponent = Event.new|;
 
-var r = Radar.new([Sonar.new(s,20,32)],opponent)|;
+var r = Radar.new([ss1,ss2,ss3,ss4,ss5,ss6,ss7],opponent)|;
 
 log.log << "mise à jour de posMonitored"|;
-r.posMonitored = [19]|;
-r.delay = 1s|;
+r.posMonitored = [0]|;
+r.delay = 0.3s|;
 
 var state = "normal"|;
 
-at (opponent?)
+/*at (opponent?)
     if (state != "crisis") {
 		    state = "crisis";
 		    log.log << "OPPONENT !!!";
@@ -38,9 +52,9 @@ at (opponent?)
 		    l.stop;
             log.log << "work done";
 		    state = "normal"
-    };
+    };*/
 
-sleep(2s);
+/*sleep(2s);
 s.get = function {
     return 4
 }|;
@@ -80,4 +94,4 @@ sleep(6);
 log.log << "STOP !!!"|;
 r.stop;
 
-System.shutdown;
+System.shutdown;*/
