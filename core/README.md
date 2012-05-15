@@ -7,7 +7,7 @@
    * _path_ : chemin du fichier où logguer
  * _Flogger.'<<' string_ : logue string
 
-## Exemple :
+## Exemple
 
 var machin_l = FLogger.new("Machin", /path/to/machin);
 
