@@ -1,15 +1,3 @@
-# Sonar
-
-## Usage
-
- * _Sonar.new(captor, pos, range)_
-  * _captor_ : doit avoir une méthode _get()_
-  * _pos_ : la position du sonar
-  * _range_ : le champ de vision du sonar
- * _Sonar.get_ : pour checker le sonar
- * _Sonar.min_ : position minimum visible par le sonar
- * _Sonar.max_ : position maximum visible par le sonar
-
 # Radar
 
 ## Usage
@@ -38,3 +26,30 @@ On a une liste de positions surveillées donnée par l'utilisateur, ainsi qu'une
 On parcourt la liste des positions surveillées. Pour chaque position, on crée un nouveau groupe.
 
 On cherche tous les sonars dont la position est dans le champ de vision, et on les ajoute au groupe. On trie ensuite le groupe du plus proche de la position au plus lointain, pour que le plus proche soit le principal et on l'ajoute à la liste des groupes. On passe à la position suivante.
+
+
+# Robot
+
+## Usage
+ * _Robot.new(x, y, angle, zone)_
+   * _x,y_ : position de départ
+   * _angle_ : orientation de départ
+   * _zone_ : zone de départ (_"R"_ ou _"V"_)
+ * _Robot.forward (d)_ : avance de _d_ centimètres en ligne droite, bloquante
+ * _Robot.rotate (a)_ : tourne sur lui-même d'un angle de _a_ degrés, bloquante
+ * _Robot.stop_ : arrête le robot, bloquante
+
+
+# Sonar
+
+## Usage
+
+ * _Sonar.new(captor, pos, range)_
+  * _captor_ : doit avoir une méthode _get()_
+  * _pos_ : la position du sonar
+  * _range_ : le champ de vision du sonar
+ * _Sonar.get_ : pour checker le sonar
+ * _Sonar.min_ : position minimum visible par le sonar
+ * _Sonar.max_ : position maximum visible par le sonar
+
+
