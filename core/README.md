@@ -1,3 +1,18 @@
+# FLogger
+
+## Usage
+
+ * _FLogerr.new(title, path)_
+   * _title_ : title du logger
+   * _path_ : chemin du fichier où logguer
+ * _Flogger.'<<' string_ : logue string
+
+## Exemple :
+
+var machin_l = FLogger.new("Machin", /path/to/machin);
+machin_l << "Je viens de faire un premier truc avec mon machin";
+
+
 # Radar
 
 ## Usage
