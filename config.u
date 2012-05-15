@@ -1,4 +1,6 @@
-// La zone dans laquelle se trouve le robot au démarrage
-var Global.zone = "R";
+// les adresse des arduinos
+var Global.ttySonars = "/dev/arduinoSonars"|
+var Global.ttyServos = "/dev/arduinoServos"|
 
-var tty = "/dev/ttyACM0";
+// les différents loggers
+var machin_l = FLogger.new("Machin", "/tmp/machin.log")|

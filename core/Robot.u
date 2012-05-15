@@ -20,11 +20,16 @@ class Robot {
         _y = y;
         _angle = angle;
         _zone = zone;
+    
+        at (forward_t.enter?) moving = true;
+        at (forward_t.leave?) moving = false;
+    };
+
+    function rad {
+        _angle * Pi / 180;
     };
 
     function forward (d) {
-        moving = true;
-
         var dReal = { forward_t: { sleep(d/20); echo("done"); d } };
         
         echo("Je viens d'avancer de : " + dReal + "; je voulais avancer de : " + d + ";");
@@ -33,24 +38,31 @@ class Robot {
         _x += dReal * cos(angleRad);
         _y += dReal * sin(angleRad);
 
-        moving = false;
         echo("I'm done");
         done!;
     };
 
+    function forwardAtX (xWanted) {
+        var d = (xWanted - _x) / cos(rad);
+        forward (d);
+    };
+
+    function forwardAtY (yWanted) {
+        var d = (yWanted - _y) / sin(rad);
+        forward (d);
+    };
 
     function rotate (angle) {
-        if (zone == "R")
+        if (_zone == "R")
             _angle += angle
         else
             _angle -= angle;
     };
 
-
     function stop {
         echo("STOP !");
         if (moving) {
-            forward_t.stop(42);
+            forward_t.stop(5);
             waituntil(done?);
             echo("we are stoped");
         };

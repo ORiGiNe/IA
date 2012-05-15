@@ -12,21 +12,68 @@ requireFile("config.u");
 //          IA          //
 //----------------------//
 
-// Toute l'IA est codé en supposant que le robot par de la zone rouge
-// La fonction rotate permet de tourner à droite ou à gauche selon que l'on
-// est réellement dans la zone rouge ou dans la zone violette
+/* Toute l'IA est codé en supposant que le robot par de la zone rouge.
+ * La fonction Robot.rotate permet de tourner à droite ou à gauche selon que
+ * l'on est réellement dans la zone rouge ou dans la zone violette.
+ */
 
 
-// les différents tag que l'on va utiliser
-var group_t = Tag.new("group"); 
-var alones_t = Tag.new("alones");
-var forward_t = Tag.new("forward");
+// le robot
+var robot = Robot.new(0,0,0,"R")|
+
+
+/* Les différents tag que l'on va utiliser.
+ * On rajoute un slot "done". On s'en sevira pour indiquer si le tag est
+ * arriver à la fin de son exécution ou s'il a été stopé en cours de route
+ */
+var Tag.done = false|;
+
+var group_t = Tag.new("group")| 
+var alones_t = Tag.new("alones")|
+var poussoirs_t = Tag.new("poussoirs")|
+var u_t = Tag.new ("U")|
 
 // cette variable sera égal au tag en cours
-var current_t;
+var current_t|
 
 
-var robot = Robot.new(0,0,0,"R");
+at (group_t.leave?) echo("OK on me stop, nan mais OK, allez tous faire vous faire foutre")|
+
+
+
+// les différentes actions du robot
+
+
+/* U
+ *
+ * On tente de faire tour de l'île (un U) pour rafler tous les CDs qui trainent
+ * dans la mer (on est un peu écolo sur les bords). On part par la droite de l'île.
+ */
+function u {
+    current_t = u_t |
+    u_t: {
+        do (robot) {
+            rotate(45);
+            forwardAtY(50);
+            rotate(-45);
+            forwardAtX(234);
+            rotate(90);
+            forwardAtY(170);
+            rotate(90);
+            forwardAtX(63);
+            rotate(90);
+            forwardAtY(100);
+            rotate(-45);
+            forwardAtX(30);
+        };
+        u_t.done = true;
+    };
+}|;
+
+at (u_t.leave?) {
+    if (!u_t.done)
+        echo ("J'vous déteste");
+};
 
 
 // les 4 CDs du bas plus le premier poussoir
@@ -39,13 +86,16 @@ function group {
             forward(50);
             rotate(90);
             forward(25);
-        }|;
+        };
 }|;
 
-group,
+/*group,
 sleep(3);
-{ robot.stop | current_t.stop };
-echo("x = " + robot._x);
-echo("y = " + robot._y);
+{ robot.stop | current_t.stop };*/
+u,
+sleep(5)|
+robot.stop | current_t.stop|
+echo("x = " + robot._x)|
+echo("y = " + robot._y)|
 
 System.shutdown;
