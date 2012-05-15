@@ -1,7 +1,7 @@
 class Robot {
     var _x;
     var _y;
-    var _angle;
+    var angle;
     var _zone;
     var Pi = 4*atan(1);
 
@@ -18,7 +18,7 @@ class Robot {
     function init (x, y, angle, zone) {
         _x = x;
         _y = y;
-        _angle = angle;
+        angle = angle;
         _zone = zone;
     
         at (forward_t.enter?) moving = true;
@@ -26,7 +26,7 @@ class Robot {
     };
 
     function rad {
-        _angle * Pi / 180;
+        angle * Pi / 180;
     };
 
     function forward (d) {
@@ -34,7 +34,7 @@ class Robot {
         
         echo("Je viens d'avancer de : " + dReal + "; je voulais avancer de : " + d + ";");
         
-        var angleRad = _angle * Pi / 180;
+        var angleRad = angle * Pi / 180;
         _x += dReal * cos(angleRad);
         _y += dReal * sin(angleRad);
 
@@ -54,9 +54,9 @@ class Robot {
 
     function rotate (angle) {
         if (_zone == "R")
-            _angle += angle
+            angle += angle
         else
-            _angle -= angle;
+            angle -= angle;
     };
 
     function stop {
