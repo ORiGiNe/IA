@@ -12,6 +12,12 @@ class PathFinder {
     var _closedSet; // noeuds par lesquels ont est déjà passé 
     var _openSet; // noeuds étudiés et disponibles
 
+    var logJ = Logger.new("Jump");
+    var logN = Logger.new("getNeighbours");
+    var logI = Logger.new("identifySuccessors");
+    var logP = Logger.new("pathTo");
+    var logH = Logger.new("hasForcedNeighbours");
+
     function init (map) {
         // la carte DOIT contenir une bordure d'obstacle
         _map = map;
@@ -30,43 +36,48 @@ class PathFinder {
      * sinon on l'insère en gardant la liste triée
      */
     function insertOpenSet (n) {
-        /* si le noeud est déjà présent mais que le nouveau poids est moins bien,
-         * on ne le réinsère pas
-         */
-        var insert = true;
+        // si _openSet est vide, c'est assez rapide
+        if (_openSet.empty)
+            _openSet = [n]
+        else {
+            /* si le noeud est déjà présent mais que le nouveau poids est moins bien,
+            * on ne le réinsère pas
+            */
+            var insert = true;
 
-        // on regarde si le noeud est déjà présent
-        var i = 0;
-        for (var e in _openSet) {
-            if (e.dot == n.dot)
-                if (e.weight < n.weight) {
-                    /* si c'est le cas et que son nouveau poid est meilleur,
-                     * on le supprime de la liste pour le réinsérer à sa
-                     * bonne place
-                     */
-                    _openSet = _openSet.filter(
-                        function (v) {
-                            v.dot != n.dot;
-                        });
-                    break;
-                }
-                else
-                    insert = false;
+            // on regarde si le noeud est déjà présent
+            var i = 0;
+            for (var e in _openSet) {
+                if (e.dot == n.dot)
+                    if (e.weight < n.weight) {
+                        /* si c'est le cas et que son nouveau poid est meilleur,
+                        * on le supprime de la liste pour le réinsérer à sa
+                        * bonne place
+                        */
+                        _openSet = _openSet.filter(
+                            function (v) {
+                                v.dot != n.dot;
+                            });
+                        break;
+                    }
+                    else
+                        insert = false;
 
-            i++;
-        };
-
-        /* on insère le noeud à la bonne place (à moins qu'il y soit déjà
-         * avec un meilleur poids)
-         */
-        i = 0;
-        for (var e in _openSet) {
-            if (e.weight >= n.weight && insert) {
-                _openSet.insert(i, n);
-                break;
+                i++;
             };
 
-            i++;
+            /* on insère le noeud à la bonne place (à moins qu'il y soit déjà
+            * avec un meilleur poids)
+            */
+            i = 0;
+            for (var e in _openSet) {
+                if (e.weight >= n.weight && insert) {
+                    _openSet.insert(i, n);
+                    break;
+                };
+
+                i++;
+            };
         };
     };
 
@@ -98,10 +109,14 @@ class PathFinder {
         var neighbours = [];
         var neighbour = Node.new;
 		neighbour.parent = n.dot;
-		echo("My father is " + neighbour.parent);
+		//logN.log << "My father is " + n.parent;
+        //logN.log << "I am his soon, i am " + n.dot;
 
         if (!n.parent.isNil) {
             var direction = Dot.new(n.dot.x - n.parent.x, n.dot.y - n.parent.y);
+            if (direction.x != 0) direction.x /= direction.x.abs;
+            if (direction.y != 0) direction.y /= direction.y.abs;
+            //logN.log << "I come with " + direction;
 
             // si on se délpace horizontalement
             if (direction.y == 0) {
@@ -130,11 +145,11 @@ class PathFinder {
                         neighbour.dot.x += direction.x;
 
                         /* si c'est un obstacle, le 3ème voisin est forcé
-			 * (si ce n'est pas un obstacle
-			 */
+            			 * (si ce n'est pas un obstacle)
+            			 */
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.x += direction.x;
-	                    if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+	                        if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                                 neighbours << neighbour.copy;
                         };
                     };
@@ -142,7 +157,7 @@ class PathFinder {
 
                 // le 7ème noeud est soit un obstacle, soit un voisin
                 neighbour.dot = n.parent;
-                neighbour.x += 2 * direction.x;
+                neighbour.dot.x += 2 * direction.x;
 
                 if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                     neighbours << neighbour;
@@ -171,9 +186,10 @@ class PathFinder {
                         // 2ème voisin
                         neighbour.dot.y += direction.y;
 
-                        // si c'en un obstacle, le 3ème voisin est forcé
+                        // si c'est un obstacle, le 3ème voisin est forcé
                         if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                             neighbour.dot.y += direction.y;
+                        
                             if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                                 neighbours << neighbour.copy;
                         };
@@ -182,59 +198,76 @@ class PathFinder {
 
                 // le 7ème noeud est soit un obstacle, soit un voisin
                 neighbour.dot = n.parent;
-                neighbour.y += 2 * direction.y;
+                neighbour.dot.y += 2 * direction.y;
 
                 if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                     neighbours << neighbour.copy;
             }
             // si on se déplace en diagonale
             else {
+                //logN.log << "So we go in diagonal eh ?";
                 // on part du 1er côté
-                neighbour.dot = n.parent;
+                neighbour.dot = n.parent.clone;
+                //logN.log << "We go from " + neighbour.dot.asString;
 
                 // 1er voisin
                 neighbour.dot.x += direction.x;
+                //logN.log << "Is x1 " + neighbour.dot.asString + " a neighbour ?";
 
                 // si c'est un obstacle, le 2ème voisin est forcé
-                if (_map[neighbour.dot.x][neighbour.dot.y] == 0) {
+                if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                     // 2ème voisin
                     neighbour.dot.x += direction.x;
+                    //logN.log << "Is x2 " + neighbour.dot.asString + " a neighbour ?";
 
                     // on vérifie que ce n'est pas un obstacle
-                    if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
+                    if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                         neighbours << neighbour.copy;
+                };
 
-                    // le suivant est soit un obstacle, soit un voisin naturel
-                    neighbour.dot.y += direction.y;
-                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour.copy;
-                 };
+                neighbour.dot = n.parent.clone;
+
+                // le suivant est soit un obstacle, soit un voisin naturel
+                neighbour.dot.x += 2 * direction.x;
+                neighbour.dot.y += direction.y;
+                //logN.log << "Is x3 " + neighbour.dot.asString + " a neighbour ?";
+                if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                    neighbours << neighbour.copy;
+
 
                 // on part du 2nd côté
-                neighbour.dot = n.parent;
+                neighbour.dot = n.parent.clone;
+                //logN.log << "Ok, now let's try the other side. We are back on " + neighbour.dot;
 
                 // 1er voisin
                 neighbour.dot.y += direction.y;
+                //logN.log << "Is y1 " + neighbour.dot.asString + " a neighbour ?";
 
                 // si c'est un obstacle, le 2ème voisin est forcé
-                if (_map[neighbour.dot.x][neighbour.dot.y] == 0) {
+                if (_map[neighbour.dot.x][neighbour.dot.y] == 1) {
                     // 2ème voisin
                     neighbour.dot.y += direction.y;
+                    //logN.log << "Is y2 " + neighbour.dot.asString + " a neighbour ?";
 
                     // on vérifie que ce n'est pas un obstacle
-                    if (_map[neighbour.dot.x][neighbour.dot.y] == 0)
+                    if (_map[neighbour.dot.x][neighbour.dot.y] == 1)
                         neighbours << neighbour.copy;
-                    
-                    // celui-ci est soit un obstacle, soit un voisin naturel
-                    neighbour.dot.x += direction.x;
-                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour.copy;
+                };                   
+                
+                neighbour.dot = n.parent.clone;
 
-                    // enfin le dernier, soit obstacle soit voisin naturel
-                    neighbour.dot.x += direction.x;
-                    if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
-                        neighbours << neighbour.copy;
-                };
+                // celui-ci est soit un obstacle, soit un voisin naturel
+                neighbour.dot.y += 2 * direction.y;
+                neighbour.dot.x += direction.x;
+                //logN.log << "Is y3 " + neighbour.dot.asString + " a neighbour ?";
+                if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                    neighbours << neighbour.copy;
+
+                // enfin le dernier, soit obstacle soit voisin naturel
+                neighbour.dot.x += direction.x;
+                //logN.log << "Is the last one " + neighbour.dot.asString + " a neighbour ?";
+                if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
+                    neighbours << neighbour.copy;
             };
         }
         else {
@@ -248,7 +281,7 @@ class PathFinder {
                         neighbour.dot = n.dot + Dot.new(i,j);
 
                         // on vérifie que ce n'est pas un obstacle
-                        if (_map[neighbour.dot.x][neighbour.dot.y] != 0)
+                        if (_map[neighbour.dot.x][neighbour.dot.y] != 1)
                             neighbours << neighbour.copy;
                     };
                 };
@@ -259,55 +292,69 @@ class PathFinder {
     };
 
 
-	// permet de savoir si n à des voisins forcés
-	function hasForcedNeighbours(n) {
-		var node = n.parent;
-		var direction = Dot.new(n.dot.x - node.x, n.dot.y - node.y);
+	/* permet de savoir si n à des voisins forcés
+     * on arrive depuis la direction d
+     */
+	function hasForcedNeighbours(n, d) {
+        //logH.log << n.dot.asString + " has forced neighbours ?";
+
+        //logH.log << "his parent is " + (n.dot - d);
 
 		// si on se déplace verticalement
-		if (direction.x == 0)
+		if (d.x == 0)
 			// on pars d'abord par la gauche, puis par la droite
-			for (i in [-1, 1]) {
-				// on se décale dans la direction en cours
-				node.dot.x += i;
+			for (var i in [-1, 1]) {
+                // noeud depuis lequel on arrive
+        		var node = n.dot - d;
 
+				// on se décale dans la direction en cours
+				node.x += i;
+                //logH.log << "OK, I'm testing " + node;
 				// si le 2ème voisin est un obstacle
-				if (_map[node.x][node.y + direction.y] == 1) {
+				if (_map[node.x][node.y + d.y] == 1) {
+                    //logH.log << "WHY THIS APPENDS TO ME ????!!!!";
 					// si le 3ème voisin n'est pas obstacle
-					if (_map[node.x][node.y + 2 * direction.y] != 1)
+					if (_map[node.x][node.y + 2 * d.y] != 1)
 						// alors c'est un voisin forcé
 						return true;
 				}
 				// sinon si le 1er voisin est un obstacle
-				else if (_map[node.x][node.y] != 1)
+				else if (_map[node.x][node.y] == 1)
 					// alors le 2ème voisin est un obstacle
 					return true;
 			}
 		// si on se déplace horizontalement
-		else if (direction.y == 0)
+		else if (d.y == 0)
 			for (var i in [-1, 1]) {
+                // noeud depuis lequel on arrive
+        		var node = n.dot - d;
+
                 node.y += i;
                 
                 // si le 2ème voisin est un obstacle
-                if (_map[node.x + direction.x][node.y] == 1) {
+                if (_map[node.x + d.x][node.y] == 1) {
                     // si le 3ème voisin n'est pas obstacle
-                    if (_map[node.x + 2 * direction.x][node.y] != 1)
+                    if (_map[node.x + 2 * d.x][node.y] != 1)
                         // alors c'est un voisin forcé
                         return true;
 		}
                 // sinon si le 1er voisin est un obstacle
-                else if (_map[node.x][node.y] != 1)
+                else if (_map[node.x][node.y] == 1)
                     // alors le 2ème voisin est un obstacle
                     return true;
 			}
 		// si on se déplace en diagonale
-		else
-			if (_map[node.x + direction.x][node.y] == 1 && _map[node.x + 2 * direction.x][node.y] == 0)
+		else {
+            // noeud depuis lequel on arrive
+    		var node = n.dot - d;
+
+			if (_map[node.x + d.x][node.y] == 1 && _map[node.x + 2 * d.x][node.y] == 0)
 				// si le 1er voisin est un obstacle et pas le 3ème, ce dernier est forcé
 				return true
-			else if (_map[node.x][node.y + direction.y] == 1 && _map[node.x][node.y + 2 * direction.y] == 0)
+			else if (_map[node.x][node.y + d.y] == 1 && _map[node.x][node.y + 2 * d.y] == 0)
 				// idem dans l'autre direction
 				return true;
+        };
 
 		false;
 	};
@@ -315,36 +362,54 @@ class PathFinder {
 
 	// trouve à partir de n le prochain point intéressant dans la direction d
 	function jump (n, d) {
-		echo("Jump from " + n.dot + " to …");	
-		var node = n.clone;
+		var node = n.copy;
 		node.dot += d;
 
-		/* si c'est un obstacle, ce n'est pas vraiment intéressant (se prendre des
-		 * murs !)
-		 */
-		if (_map[node.dot.x][node.dot.y] == 0)
-			return nil;
+        loop {
+		    //logJ.log << "Jump from " + n.dot + " in direction " + d + " to " + node.dot.asString + " wich is …";
 
-		// si c'est le but, c'est plutôt intéressant (enfin il paraît …)
-		if (node.dot == _goal)
-			return node;
+		    /* si c'est un obstacle, ce n'est pas vraiment intéressant (se prendre des
+		    * murs !)
+		    */
+		    if (_map[node.dot.x][node.dot.y] == 1)
+                { //logJ.log << "… an obstacle";
+			    return nil;};
 
-		// s'il a au moins un voisin forcé, il est intéressant
-		if (hasForcedNeighbours(n))
-			{ echo (n.dot);
-			return n; };
+		    // si c'est le but, c'est plutôt intéressant (enfin il paraît …)
+		    if (node.dot == _goal)
+                { //logJ.log << "… the goal !";
+			    return node;};
 
-		/* si on arrive en diagonal, en check à la verticale et à l'horizontale
-		 * (vers l'avant toujours)
-		 */
-		if (d.x != 0 && d.y != 0)
-			for (2) {
-				if ( !jump(node, Dot.new(d.x,0)).isNil || !jump(node, Dot.new(0,d.y).isNil))
-					{ echo(n.dot);
-					return n;};
-			};
+		    // s'il a au moins un voisin forcé, il est intéressant
+		    if (hasForcedNeighbours(node,d))
+			    { //logH.log << "Yes ! It has !";
+                //logJ.log << "… " + n.dot;
+			    return node; };
 
-		return jump(node, d);
+            //logH.log << "No, it's just a asshole";
+
+		    /* si on arrive en diagonal, en check à la verticale et à l'horizontale
+		    * (vers l'avant toujours)
+		    */
+		    if (d.x != 0 && d.y != 0) {
+                //logJ.log << "A diagonal ? I like that.";
+                //logJ.log << "Ok, let's try in the direction " + d.x;
+                var a = jump(node, Dot.new(d.x,0));
+
+                if (!a.isNil)
+                    { //logJ.log << "… " + n.dot + " because he have forced neighbours";
+			        return node;};
+
+                //logJ.log << "Wath in the direction " + d.y;
+                var b = jump(node, Dot.new(0,d.y));
+    		    if (!b.isNil)
+	        	    { //logJ.log << "… " + n.dot + " because he have forced neighbours";
+			        return node;};
+		    };
+
+            //logJ.log << "… not interesting. Let's go forward.";
+		    node.dot += d;
+        };
 	};
 
 
@@ -353,12 +418,15 @@ class PathFinder {
 		var successors = [];
 
 		for (var node in neighbours) {
-			echo ("Is " + node.dot + " a successor ?");
+			//logI.log << "Is " + node.dot + " a successor ?";
 			var direction = Dot.new(node.dot.x - n.dot.x, node.dot.y - n.dot.y);
-			var successor = jump(node, direction);
+            if (direction.x != 0) direction.x /= direction.x.abs;
+            if (direction.y != 0) direction.y /= direction.y.abs;
+            //logI.log << "My direction is " + direction;
+			var successor = jump(n, direction);
 
 			if (!successor.isNil) {
-				echo("yes !");
+				//logI.log << "yes ! " + node.dot + " is a successor";
 				successors << node };
 		};
 
@@ -392,6 +460,7 @@ class PathFinder {
 
         // si _openSet est vide, c'est qu'on a épuisé toutes les possibilités
         while (!_openSet.empty) {
+            //logP.log << "========================================================";
             /* on se déplace sur le noeud de meilleur poids
              * (_openSet étant trié)
              */
@@ -413,16 +482,19 @@ class PathFinder {
 
             // on cherche ses voisins
             var neighbours = getNeighbours(current);
-			echo ("neighbours = " + neighbours);
+			//logP.log << "neighbours = " + neighbours.clone.map(function(v){v.dot});
 		    var successors = identifySuccessors(neighbours, current);
-			echo ("successors = " + successors);
+			//logP.log << "successors = " + successors.clone.map(function(v){v.dot});
 
 			for (var node in successors) {
+                //logP.log << "OK let's insert " + node.dot;
 				node.parent = current.dot;
 				node.distance = current.distance + 1;
 				node.weight = node.distance + weight(node);
-				_openSet << node;
+				insertOpenSet(node);
 			};
+
+            //logP.log << "openSet = " + _openSet.clone.map(function(v){v.dot});
         };
 
         // on a épuisé les possibilités, il n'existe pas de chemin

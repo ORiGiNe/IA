@@ -9,7 +9,7 @@ class Object.Node {
 	 */
 	function copy {
 		var copy = this.new;
-		copy.dot = this.dot;
+		copy.dot = this.dot.copy;
 		copy.parent = this.parent;
 		copy.weight = this.weight;
 		copy.distance = this.distance;

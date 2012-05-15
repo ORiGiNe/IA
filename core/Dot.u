@@ -11,6 +11,10 @@ class Object.Dot {
         this.new(x + b.x, y + b.y);
     };
 
+    function '-' (b) {
+        this.new(x - b.x, y - b.y);
+    };
+
     function '==' (b) {
         this.x == b.x && this.y == b.y;
     };
@@ -22,5 +26,9 @@ class Object.Dot {
 
     function asString {
         "(" + x + ", " + y + ")";
+    };
+
+    function copy {
+        this.new(this.x, this.y);
     };
 };
