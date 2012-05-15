@@ -59,7 +59,7 @@ class Robot {
             _angle -= angle;
     };
 
-    function setAngler(angle) {
+    function setAngle (angle) {
         _angle = angle;
     };
 
