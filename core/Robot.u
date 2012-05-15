@@ -59,8 +59,9 @@ class Robot {
             _angle -= angle;
     };
 
-    function rotateAt (angle) {
+    function setAngler(angle) {
         _angle = angle;
+    };
 
     function stop {
         echo("STOP !");
