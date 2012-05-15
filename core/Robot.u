@@ -30,7 +30,7 @@ class Robot {
     };
 
     function forward (d) {
-        var dReal = { forward_t: { sleep(d/20); echo("done"); d } };
+        var dReal = { forward_t: { sleep(d/50); echo("done"); d } };
         
         echo("Je viens d'avancer de : " + dReal + "; je voulais avancer de : " + d + ";");
         
@@ -57,10 +57,13 @@ class Robot {
             _angle += angle
         else
             _angle -= angle;
+
+        sleep(angle/90);
     };
 
     function setAngle (angle) {
         _angle = angle;
+        sleep(angle/90);
     };
 
     function stop {

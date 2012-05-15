@@ -99,9 +99,16 @@ function poussoirs {
             }
             else {
                 // on est près du second poussoir
-                setAngle(0);
-                forwardAtX(136);
-                rotate(90);
+                if (_y < 126) {            
+                    setAngle(0);
+                    forwardAtX(235);
+                    rotate(90);
+                    forwardAtY(170);
+                };
+
+                setAngle(180);
+                forwardAtX(190);
+                rotate(-90);
                 forwardAtY(198);
             };
         };
@@ -135,6 +142,12 @@ sleep(3);
 { robot.stop | current_t.stop };*/
 echo("start");
 u;
+poussoirs;
+echo("x = " + robot._x)|
+echo("y = " + robot._y)|
+robot.forwardAtY(50);
+robot.rotate(-90);
+robot.forwardAtX(235);
 //sleep(5)|
 //robot.stop | current_t.stop|
 echo("x = " + robot._x)|
