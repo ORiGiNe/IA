@@ -10,6 +10,7 @@
 ## Exemple :
 
 var machin_l = FLogger.new("Machin", /path/to/machin);
+
 machin_l << "Je viens de faire un premier truc avec mon machin";
 
 
