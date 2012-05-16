@@ -36,7 +36,16 @@ var u_t = Tag.new ("U")|
 var current_t|
 
 
-at (group_t.leave?) echo("OK on me stop, nan mais OK, allez tous faire vous faire foutre")|
+// launch (action, tag);
+function launch {
+    var tag = call.evalArgAt(1);
+    current_t = tag;
+    echo ("c");
+    current_t: call.evalArgAt(0);
+    echo ("b");
+    waituntil(tag.done);
+    echo ("b");
+}|;
 
 
 
@@ -85,42 +94,57 @@ at (u_t.leave?) {
  * noires.
  */
 function poussoirs {
-    current_t = poussoirs_t |
-    poussoirs_t: {
-        do (robot) {
-            // on check très grossièrement où on est
-            if (_x < 150) {
-                // on est près du premier poussoirs
+    do (robot) {
+        // on check très grossièrement où on est
+        if (_x < 150) {
+            // on est près du premier poussoirs
+            setAngle(0);
+            forwardAtX(64);
+            rotate(90);
+            forwardAtY(198) |
+            forwardAtY(300)
+        }
+        else {
+            // on est près du second poussoir
+            if (_y < 126) {
                 setAngle(0);
-                forwardAtX(64);
+                forwardAtX(235);
                 rotate(90);
-                forwardAtY(198);
-            }
-            else {
-                // on est près du second poussoir
-                if (_y < 126) {
-                    setAngle(0);
-                    forwardAtX(235);
-                    rotate(90);
-                    forwardAtY(170);
-                };
-
-                setAngle(180);
-                forwardAtX(190);
-                rotate(-90);
-                forwardAtY(198);
+                forwardAtY(170);
             };
+
+            setAngle(180);
+            forwardAtX(190);
+            rotate(-90);
+            forwardAtY(198);
         };
-        poussoirs_t.done = true;
     };
-    waituntil (poussoirs_t.done);
+    poussoirs_t.done = true;
+    echo ("we are done");
+    5;
 }|;
 
 at (poussoirs_t.enter?) poussoirs_t.done = false;
 
 at (poussoirs_t.leave?) {
-    if (!poussoirs_t.done)
+    echo ("!!!!!!!!!!!!!!");
+    if (!poussoirs_t.done) {
+        echo ("not finish");
+        current_t = Tag.new();
+        for (6) {
+            sleep(0.5s);
+            echo ("FOOOOOOOOOOOOOOOOOOOOR");
+            if (!poussoirs_t.done) {
+                echo ("hop");
+                current_t:
+                    poussoirs;
+            }
+            else {echo ("on repart");
+                break;}
+        };
+
         poussoirs_t.done = true;
+    };
 };
 
 
@@ -138,19 +162,16 @@ function group {
 }|;
 
 
-/*group,
-sleep(3);
-{ robot.stop | current_t.stop };*/
 u;
-{sleep(4); {robot.stop & current_t.stop}; },
-poussoirs;
+{sleep(3); {robot.stop (current_t)}},
+{sleep(6); {robot.stop (current_t)}},
+launch(poussoirs, poussoirs_t);
+echo("========================");
 echo("x = " + robot._x)|
 echo("y = " + robot._y)|
 robot.forwardAtY(50);
 robot.rotate(-90);
 robot.forwardAtX(235);
-//sleep(5)|
-//robot.stop | current_t.stop|
 echo("x = " + robot._x)|
 echo("y = " + robot._y)|
 poussoirs;
