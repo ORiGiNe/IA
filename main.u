@@ -7,7 +7,6 @@ requireFile("config.u");
 
 //var gaop = UGaop.new(tty);
 
-
 //----------------------//
 //          IA          //
 //----------------------//
@@ -81,7 +80,7 @@ at (u_t.leave?) {
 /* Poussoirs
  *
  * Va pousser le poussoir le plus proche.
- * 
+ *
  * Condition initiale : le robot doit être dans l'axe d'une des deux lignes
  * noires.
  */
@@ -99,7 +98,7 @@ function poussoirs {
             }
             else {
                 // on est près du second poussoir
-                if (_y < 126) {            
+                if (_y < 126) {
                     setAngle(0);
                     forwardAtX(235);
                     rotate(90);
@@ -137,10 +136,30 @@ function group {
         };
 }|;
 
+
+/*
+	Servos
+
+	Ouvre la pince et les bras du servo
+
+	Doit etre fait 90 degres par 90 sinon les bras se touchent
+	Le bras en avant doit etre ouvert en premier
+*/
+function servo {
+	var servo1 = UEffecteur.new(2,gaop);
+	var servo2 = UEffecteur.new(4,gaop);
+	servo1.set(90);
+	servo2.set(90);
+	servo1.set(0);
+	servo2.set(180);
+}|;
+
+
 /*group,
 sleep(3);
 { robot.stop | current_t.stop };*/
 echo("start");
+servo;
 u;
 poussoirs;
 echo("x = " + robot._x)|
