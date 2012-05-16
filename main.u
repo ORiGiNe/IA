@@ -114,13 +114,14 @@ function poussoirs {
         };
         poussoirs_t.done = true;
     };
-};
+    waituntil (poussoirs_t.done);
+}|;
 
 at (poussoirs_t.enter?) poussoirs_t.done = false;
 
 at (poussoirs_t.leave?) {
     if (!poussoirs_t.done)
-        echo ("Casse toi pov' con !");
+        poussoirs_t.done = true;
 };
 
 
@@ -140,8 +141,8 @@ function group {
 /*group,
 sleep(3);
 { robot.stop | current_t.stop };*/
-echo("start");
 u;
+{sleep(4); {robot.stop & current_t.stop}; },
 poussoirs;
 echo("x = " + robot._x)|
 echo("y = " + robot._y)|
