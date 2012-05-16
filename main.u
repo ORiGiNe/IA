@@ -7,7 +7,6 @@ requireFile("config.u");
 
 //var gaop = UGaop.new(tty);
 
-
 //----------------------//
 //          IA          //
 //----------------------//
@@ -81,7 +80,7 @@ at (u_t.leave?) {
 /* Poussoirs
  *
  * Va pousser le poussoir le plus proche.
- * 
+ *
  * Condition initiale : le robot doit être dans l'axe d'une des deux lignes
  * noires.
  */
@@ -99,7 +98,7 @@ function poussoirs {
             }
             else {
                 // on est près du second poussoir
-                if (_y < 126) {            
+                if (_y < 126) {
                     setAngle(0);
                     forwardAtX(235);
                     rotate(90);
@@ -137,6 +136,7 @@ function group {
             forward(25);
         };
 }|;
+
 
 /*group,
 sleep(3);
