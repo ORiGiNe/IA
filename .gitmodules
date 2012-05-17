@@ -1,3 +1,4 @@
 [submodule "UObjects"]
 	path = UObjects
-	url = https://ORiGiNe@github.com/ORiGiNe/UObjects.git
+	#url = https://ORiGiNe@github.com/ORiGiNe/UObjects.git
+	url = robot@169.254.150.42:~/git/UObjects
