@@ -38,7 +38,7 @@ class Robot {
         _x += dReal * cos(angleRad);
         _y += dReal * sin(angleRad);
 
-        echo("I'm done");
+        echo("I'm done (" + _x + ", " + _y + ")");
         done!;
     };
 
@@ -71,7 +71,7 @@ class Robot {
         if (moving) {
             forward_t.stop(5);
             forward_t.block(0);
-            waituntil(done?);
+            waituntil(done?) |
             tag.stop |
             forward_t.unblock;
             echo("we are stoped");

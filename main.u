@@ -31,6 +31,8 @@ var group_t = Tag.new("group")|
 var alones_t = Tag.new("alones")|
 var poussoirs_t = Tag.new("poussoirs")|
 var u_t = Tag.new ("U")|
+var goBackInv_t = Tag.new ("goBackInv")|
+var goBack_t = Tag.new ("goBack")|
 
 // cette variable sera égal au tag en cours
 var current_t|
@@ -41,12 +43,59 @@ function launch {
     var tag = call.evalArgAt(1);
     current_t = tag;
     current_t: call.evalArgAt(0);
+    echo("I'm waiiiiting ! Waiting for " + tag + " " + tag.done);
     waituntil(tag.done);
 }|;
 
 
 
 // les différentes actions du robot
+
+
+
+/* goBack
+ *
+ * Fait demie tour dans le sens des aiguilles d'une montre et ramène son magot
+ */
+function goBack {
+    do (robot) {
+         if (_y > 126) {
+            // on se ramène dans le bonne axe
+            setAngle(0);
+            forwardAtX(236);
+        };
+
+        setAngle(-90);
+        forwardAtY(50);
+        rotate(-90);
+        forwardAtX(75);
+        rotate(-45);
+        forwardAtX(30);
+        forwardAtX(64);
+    };
+
+    goBack_t.done = true;
+}|;
+
+at (goBack_t.enter?) goBack_t.done = false;
+
+at (goBack_t.leave?) {
+    if (!goBack_t.done) {
+        current_t = Tag.new();
+        for (4) {
+            sleep(0.5s);
+            if (!goBack_t.done) {
+                current_t:
+                    goBack;
+            }
+            else break;
+        };
+
+        launch(u, u_t);
+        goBack_t.done = true;
+    }
+};       
+
 
 
 /* U
@@ -61,13 +110,16 @@ function u {
         rotate(-45);
         forwardAtX(234);
         rotate(90);
+        forwardAtY(126);
+        rotate(45);
         forwardAtY(170);
-        rotate(90);
-        forwardAtX(63);
+        rotate(45);
+        forwardAtX(64);
         rotate(90);
         forwardAtY(100);
         rotate(-45);
         forwardAtX(30);
+        forwardAtX(64);
     };
 
     u_t.done = true;
@@ -76,8 +128,21 @@ function u {
 at (u_t.enter?) u_t.done = false;
 
 at (u_t.leave?) {
-    if (!u_t.done)
-        echo ("J'vous déteste");
+    if (!u_t.done) {
+        current_t = Tag.new();
+        
+        for (4) {
+            sleep(0.5s);
+            if (!u_t.done) {
+                current_t:
+                    u;
+            }
+            else break;
+        };
+
+        launch(goBack, goBack_t);
+        u_t.done = true;
+    };
 };
 
 
@@ -128,7 +193,7 @@ at (poussoirs_t.leave?) {
                 current_t:
                     poussoirs;
             }
-            else break;}
+            else break;
         };
 
         poussoirs_t.done = true;
@@ -137,7 +202,7 @@ at (poussoirs_t.leave?) {
 
 
 // les 4 CDs du bas plus le premier poussoir
-function group {
+/*function group {
     current_t = group_t |
     group_t:
         do (robot) {
@@ -147,9 +212,10 @@ function group {
             rotate(90);
             forward(25);
         };
-}|;
+}|;*/
 
 
+{sleep(3); {robot.stop (current_t)}},
 launch(u, u_t);
 launch(poussoirs, poussoirs_t);
 echo("x = " + robot._x)|
@@ -159,7 +225,6 @@ robot.rotate(-90);
 robot.forwardAtX(235);
 echo("x = " + robot._x)|
 echo("y = " + robot._y)|
-{sleep(3); {robot.stop (current_t)}},
 {sleep(6); {robot.stop (current_t)}},
 launch(poussoirs, poussoirs_t);
 echo("x = " + robot._x)|
