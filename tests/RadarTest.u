@@ -19,8 +19,8 @@ var ss1 = Sonar.new(s1,180,35);
 var ss2 = Sonar.new(s2,270,35);
 var ss3 = Sonar.new(s3,0,35);
 var ss4 = Sonar.new(s4,90,35);
-var ss5 = Sonar.new(s5,180,35);
-var ss6 = Sonar.new(s6,315,35);
+var ss5 = Sonar.new(s5,315,35);
+var ss6 = Sonar.new(s6,180,35);
 var ss7 = Sonar.new(s7,45,35);
 
 /*var s = Object.new|;
@@ -35,11 +35,11 @@ var r = Radar.new([ss1,ss2,ss3,ss4,ss5,ss6,ss7],opponent)|;
 
 log.log << "mise à jour de posMonitored"|;
 r.posMonitored = [0]|;
-r.delay = 0.3s|;
+r.delay = 0.1s|;
 
 var state = "normal"|;
 
-/*at (opponent?)
+at (opponent?)
     if (state != "crisis") {
 		    state = "crisis";
 		    log.log << "OPPONENT !!!";
@@ -52,7 +52,11 @@ var state = "normal"|;
 		    l.stop;
             log.log << "work done";
 		    state = "normal"
-    };*/
+    };
+
+sleep(20);
+r.posMonitored << 90;
+
 
 /*sleep(2s);
 s.get = function {

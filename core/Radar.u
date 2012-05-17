@@ -8,7 +8,7 @@ class Radar {
 	var posMonitored = []; // liste des positions surveillées
     var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
 	var delay = 0.03s; // delai entre deux check des sonars
-	var distMin = 20; // distance minimale à l'adversaire que l'on accepte
+	var distMin = 40; // distance minimale à l'adversaire que l'on accepte
 
 	var _logRadar = Logger.new("Radar");
 	var _logLoop = Logger.new("Monitoring");
@@ -77,7 +77,7 @@ class Radar {
                 _monitorLoop.update:
     				every (delay) {
 	    				distance = sonar[0].get;
-		    			_logLoop.log << "distance = " + distance
+		    			_logLoop.log << "distance " + sonar[0] + " = " + distance
 			    	},
 
 				_logLoop.log << "démarrage du at";
