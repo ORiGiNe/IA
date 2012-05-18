@@ -1,0 +1,29 @@
+//----------------------//
+//          IA          //
+//----------------------//
+
+/* Toute l'IA est codé en supposant que le robot par de la zone rouge.
+ * La fonction Robot.rotate permet de tourner à droite ou à gauche selon que
+ * l'on est réellement dans la zone rouge ou dans la zone violette.
+ */
+
+
+class IA {
+	var current_t; // tag de l'étape en cours
+	var _bot;
+
+
+	function init (bot) {
+		_bot = bot;
+	};
+
+
+	// launch (action, tag);
+	function launch {
+	    var tag = call.evalArgAt(1);
+	    current_t = tag;
+		_bot.tag = tag;
+	    current_t: call.evalArgAt(0);
+	    waituntil(tag.done);
+	}|;
+};

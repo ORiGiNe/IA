@@ -1,25 +1,19 @@
 requireFile("core/Sonar.u");
 requireFile("core/Radar.u");
 requireFile("core/FLogger.u");
-requireFile("core/Robot.u");
+requireFile("core/Bot.u");
+requireFile("core/IA.u");
 requireFile("core/RTag.u");
 
 requireFile("config.u");
 
 //var gaop = UGaop.new(tty);
 
-//----------------------//
-//          IA          //
-//----------------------//
+// le bot
+var bot = Bot.new(0,0,0,"R")|
 
-/* Toute l'IA est codé en supposant que le robot par de la zone rouge.
- * La fonction Robot.rotate permet de tourner à droite ou à gauche selon que
- * l'on est réellement dans la zone rouge ou dans la zone violette.
- */
-
-
-// le robot
-var robot = Robot.new(0,0,0,"R")|
+// l'IA
+var ia = IA.new(bot);
 
 
 /* Les différents tag que l'on va utiliser.
@@ -34,33 +28,15 @@ var goBack_t = RTag.new("goBack")|
 var goBackInv_t = RTag.new("goBackInv")|
 var cross_t = RTag.new("cross")|
 
-// cette variable sera égal au tag en cours
-var current_t|
 
-
-// launch (action, tag);
-function launch {
-    var tag = call.evalArgAt(1);
-    current_t = tag;
-	robot.tag = tag;
-    current_t: call.evalArgAt(0);
-    echo("I'm waiiiiting ! Waiting for " + tag + " " + tag.done);
-    waituntil(tag.done);
-}|;
-
-
-
-
-// les différentes actions du robot
-
-
+// les différentes actions du bot
 
 /* goBack
  *
  * Fait demie tour dans le sens des aiguilles d'une montre et ramène son magot
  */
 function goBack {
-    do (robot) {
+    do (bot) {
         if (_y > 126) {
             // on se ramène dans le bonne axe
             setAngle(0);
@@ -86,7 +62,7 @@ function goBack {
  * dans la mer (on est un peu écolo sur les bords). On part par la droite de l'île.
  */
 function goBackInv {
-    do (robot) {
+    do (bot) {
 		if (_y < 100) {
 			setAngle(0);
 	        forwardAtX(234);
@@ -113,11 +89,11 @@ function goBackInv {
  *
  * Va pousser le poussoir le plus proche.
  *
- * Condition initiale : le robot doit être dans l'axe d'une des deux lignes
+ * Condition initiale : le bot doit être dans l'axe d'une des deux lignes
  * noires.
  */
 function poussoirs {
-    do (robot) {
+    do (bot) {
         // on check très grossièrement où on est
         if (_x < 150) {
             // on est près du premier poussoirs
@@ -146,7 +122,7 @@ function poussoirs {
 
 
 function cross {
-	do (robot) {
+	do (bot) {
 		var x;
 
 		if (_x < 150)
@@ -173,18 +149,18 @@ function cross {
 function main {
 	at (goBack_t.leave?) {
 		if (!goBack_t.done) {
-			current_t = Tag.new();
+			ia.current_t = Tag.new();
 	
 			for (4) {
 		    	sleep(0.5s);
 			    if (!goBack_t.done)
-					current_t:
+					ia.current_t:
 				    	goBack
 			    else break;
 			};
 
 			if (!goBack_t.done)
-				launch(goBackInv, goBackInv_t);
+				ia.launch(goBackInv, goBackInv_t);
 		
 			goBack_t.done = true;
 		}
@@ -193,18 +169,18 @@ function main {
 
 	at (goBackInv_t.leave?) {
 		if (!goBackInv_t.done) {
-        	current_t = Tag.new();
+        	ia.current_t = Tag.new();
         
 	        for (4) {
     	        sleep(0.5s);
         	    if (!goBackInv_t.done) {
-            	    current_t:
+            	    ia.current_t:
                 	    goBackInv;
 	            }
     	        else break;
         	};
 
-	        launch(goBack, goBack_t);
+	        ia.launch(goBack, goBack_t);
 			goBackInv_t.done = true;
 	    };
 	};
@@ -216,7 +192,7 @@ function main {
 	        for (6) {
     	        sleep(0.5s);
         	    if (!poussoirs_t.done) {
-            	    current_t:
+            	    ia.current_t:
                 	    poussoirs;
 	            }
     	        else break;
@@ -233,20 +209,16 @@ function main {
 
 
 	echo(goBackInv_t);
-	{sleep(3); robot.stop},
-	robot.rotate(45);
-    robot.forwardAtY(50);
-	launch(goBackInv, goBackInv_t);
-	launch(poussoirs, poussoirs_t);
-	echo("x = " + robot._x)|
-	echo("y = " + robot._y)|
-	launch(cross, cross_t);
-	echo("x = " + robot._x)|
-	echo("y = " + robot._y)|
-	{sleep(6); robot.stop},
-	launch(poussoirs, poussoirs_t);
-	echo("x = " + robot._x)|
-	echo("y = " + robot._y)|
+	{sleep(3); bot.stop},
+	bot.rotate(45);
+    bot.forwardAtY(50);
+	ia.launch(goBackInv, goBackInv_t);
+	ia.launch(poussoirs, poussoirs_t);
+	ia.launch(cross, cross_t);
+	{sleep(6); bot.stop},
+	ia.launch(poussoirs, poussoirs_t);
+	echo("x = " + bot._x)|
+	echo("y = " + bot._y)|
 }|;
 
 
