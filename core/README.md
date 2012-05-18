@@ -1,4 +1,20 @@
+# Bot
+
+Représente le robot physique.
+
+## Usage
+ * _Bot.new(x, y, angle, zone)_
+   * _x,y_ : position de départ
+   * _angle_ : orientation de départ
+   * _zone_ : zone de départ (_"R"_ ou _"V"_)
+ * _Bot.forward (d)_ : avance de _d_ centimètres en ligne droite, bloquante
+ * _Bot.rotate (a)_ : tourne sur lui-même d'un angle de _a_ degrés, bloquante
+ * _Bot.stop_ : arrête le robot, bloquante
+
+
 # FLogger
+
+Logue dans un fichier.
 
 ## Usage
 
@@ -14,7 +30,22 @@ var machin_l = FLogger.new("Machin", /path/to/machin);
 machin_l << "Je viens de faire un premier truc avec mon machin";
 
 
+# IA
+
+Permet de regrouper quelques éléments clefs de l'IA dans un même objet.
+
+À l'heure actuelle (si cette doc est à jour), cet objet ne contient pas véritablement l'IA, mais ça devrait venir.
+
+## Usage
+
+ * _IA.new(bot)_
+  * _bot_ : le robot diriger par l'IA
+ * _IA.launch(f,t)_ : lance la fonction _f_ dans le tag _t_, en effectuant plusieurs vérification pour être sûr que la fonction f s'est bien terminée, notamment dans le cas où une procédure d'évitement a du être effectué en cours de route.
+
+
 # Radar
+
+Permet de gérer un groupe de sonars.
 
 ## Usage
 
@@ -44,19 +75,9 @@ On parcourt la liste des positions surveillées. Pour chaque position, on crée 
 On cherche tous les sonars dont la position est dans le champ de vision, et on les ajoute au groupe. On trie ensuite le groupe du plus proche de la position au plus lointain, pour que le plus proche soit le principal et on l'ajoute à la liste des groupes. On passe à la position suivante.
 
 
-# Robot
-
-## Usage
- * _Robot.new(x, y, angle, zone)_
-   * _x,y_ : position de départ
-   * _angle_ : orientation de départ
-   * _zone_ : zone de départ (_"R"_ ou _"V"_)
- * _Robot.forward (d)_ : avance de _d_ centimètres en ligne droite, bloquante
- * _Robot.rotate (a)_ : tourne sur lui-même d'un angle de _a_ degrés, bloquante
- * _Robot.stop_ : arrête le robot, bloquante
-
-
 # Sonar
+
+Capteur de détection.
 
 ## Usage
 
