@@ -30,8 +30,8 @@ var Tag.done = false|;
 var main_t = Tag.new("main")|
 
 var poussoirs_t = Tag.new("poussoirs")|
-var u_t = Tag.new("U")|
 var goBack_t = Tag.new("goBack")|
+var goBackInv_t = Tag.new("goBackInv")|
 var cross_t = Tag.new("cross")|
 
 // cette variable sera égal au tag en cours
@@ -86,17 +86,18 @@ at (goBack_t.enter?) goBack_t.done = false;
  * On tente de faire tour de l'île (un U) pour rafler tous les CDs qui trainent
  * dans la mer (on est un peu écolo sur les bords). On part par la droite de l'île.
  */
-function u {
+function goBackInv{
     do (robot) {
-        rotate(45);
-        forwardAtY(50);
-        rotate(-45);
-        forwardAtX(234);
-        rotate(90);
-        forwardAtY(126);
-        rotate(45);
-        forwardAtY(170);
-        rotate(45);
+		if (_y < 100) {
+			setAngle(0);
+	        forwardAtX(234);
+    	    rotate(90);
+	        forwardAtY(126);
+	        rotate(45);
+			forwardAtY(170);
+		};
+
+		setAngle(180);
         forwardAtX(64);
         rotate(90);
         forwardAtY(100);
@@ -105,10 +106,10 @@ function u {
         forwardAtX(64);
     };
 
-    u_t.done = true;
+    goBackInv_t.done = true;
 }|;
 
-at (u_t.enter?) u_t.done = false;
+at (goBackInv_t.enter?) goBackInv_t.done = false;
 
 
 /* Poussoirs
@@ -190,28 +191,28 @@ function main {
 			};
 
 			if (!goBack_t.done)
-				launch(u, u_t);
+				launch(goBackInv, goBackInv_t);
 		
 			goBack_t.done = true;
 		}
 	};
 
 
-	at (u_t.leave?) {
-    	if (!u_t.done) {
+	at (goBackInv_t.leave?) {
+		if (!goBackInv_t.done) {
         	current_t = Tag.new();
         
 	        for (4) {
     	        sleep(0.5s);
-        	    if (!u_t.done) {
+        	    if (!goBackInv_t.done) {
             	    current_t:
-                	    u;
+                	    goBackInv;
 	            }
     	        else break;
         	};
 
 	        launch(goBack, goBack_t);
-    	    u_t.done = true;
+			goBackInv_t.done = true;
 	    };
 	};
 
@@ -237,8 +238,11 @@ function main {
 		if (!cross_t.done)
 			cross_t.done = true;
 
+
 	{sleep(3); {robot.stop (current_t)}},
-	launch(u, u_t);
+	robot.rotate(45);
+    robot.forwardAtY(50);
+	launch(goBackInv, goBackInv_t);
 	launch(poussoirs, poussoirs_t);
 	echo("x = " + robot._x)|
 	echo("y = " + robot._y)|
