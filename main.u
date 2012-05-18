@@ -2,6 +2,7 @@ requireFile("core/Sonar.u");
 requireFile("core/Radar.u");
 requireFile("core/FLogger.u");
 requireFile("core/Robot.u");
+requireFile("core/RTag.u");
 
 requireFile("config.u");
 
@@ -25,14 +26,13 @@ var robot = Robot.new(0,0,0,"R")|
  * On rajoute un slot "done". On s'en sevira pour indiquer si le tag est
  * arriver à la fin de son exécution ou s'il a été stopé en cours de route
  */
-var Tag.done = false|;
 
 var main_t = Tag.new("main")|
 
-var poussoirs_t = Tag.new("poussoirs")|
-var goBack_t = Tag.new("goBack")|
-var goBackInv_t = Tag.new("goBackInv")|
-var cross_t = Tag.new("cross")|
+var poussoirs_t = RTag.new("poussoirs")|
+var goBack_t = RTag.new("goBack")|
+var goBackInv_t = RTag.new("goBackInv")|
+var cross_t = RTag.new("cross")|
 
 // cette variable sera égal au tag en cours
 var current_t|
@@ -42,6 +42,7 @@ var current_t|
 function launch {
     var tag = call.evalArgAt(1);
     current_t = tag;
+	robot.tag = tag;
     current_t: call.evalArgAt(0);
     echo("I'm waiiiiting ! Waiting for " + tag + " " + tag.done);
     waituntil(tag.done);
@@ -60,7 +61,7 @@ function launch {
  */
 function goBack {
     do (robot) {
-         if (_y > 126) {
+        if (_y > 126) {
             // on se ramène dans le bonne axe
             setAngle(0);
             forwardAtX(236);
@@ -78,21 +79,19 @@ function goBack {
     goBack_t.done = true;
 }|;
 
-at (goBack_t.enter?) goBack_t.done = false;
-
 
 /* U
  *
  * On tente de faire tour de l'île (un U) pour rafler tous les CDs qui trainent
  * dans la mer (on est un peu écolo sur les bords). On part par la droite de l'île.
  */
-function goBackInv{
+function goBackInv {
     do (robot) {
 		if (_y < 100) {
 			setAngle(0);
 	        forwardAtX(234);
     	    rotate(90);
-	        forwardAtY(126);
+        	forwardAtY(126);
 	        rotate(45);
 			forwardAtY(170);
 		};
@@ -108,8 +107,6 @@ function goBackInv{
 
     goBackInv_t.done = true;
 }|;
-
-at (goBackInv_t.enter?) goBackInv_t.done = false;
 
 
 /* Poussoirs
@@ -147,8 +144,6 @@ function poussoirs {
     poussoirs_t.done = true;
 }|;
 
-at (poussoirs_t.enter?) poussoirs_t.done = false;
-
 
 function cross {
 	do (robot) {
@@ -163,7 +158,7 @@ function cross {
 
 		if (_y < 100)
 			// on passe par en haut
-			forwardAtY(50)
+			forwardAtY(50, cross_t)
 		else
 			// on passe par en bas
 			forwardAtY(170);
@@ -173,8 +168,6 @@ function cross {
 	};
 	cross_t.done = true;
 }|;
-
-at (cross_t.enter?) cross_t.done = false;
 
 
 function main {
@@ -239,7 +232,8 @@ function main {
 			cross_t.done = true;
 
 
-	{sleep(3); {robot.stop (current_t)}},
+	echo(goBackInv_t);
+	{sleep(3); robot.stop},
 	robot.rotate(45);
     robot.forwardAtY(50);
 	launch(goBackInv, goBackInv_t);
@@ -249,7 +243,7 @@ function main {
 	launch(cross, cross_t);
 	echo("x = " + robot._x)|
 	echo("y = " + robot._y)|
-	{sleep(6); {robot.stop (current_t)}},
+	{sleep(6); robot.stop},
 	launch(poussoirs, poussoirs_t);
 	echo("x = " + robot._x)|
 	echo("y = " + robot._y)|

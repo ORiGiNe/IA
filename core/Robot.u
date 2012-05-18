@@ -4,15 +4,13 @@ class Robot {
     var _angle;
     var _zone;
     var Pi = 4*atan(1);
+	var tag;
 
     // tag dans lequel sera lancée la fonction faisant avancer le robot
     var forward_t = Tag.new("forward");
 
     // y a-t-il un mouvement en cours ?
     var moving = false;
-
-    // événement émis à la fin de la mise à jour des positions
-    var done = Event.new;
 
 
     function init (x, y, angle, zone) {
@@ -33,13 +31,15 @@ class Robot {
         var dReal = { forward_t: { sleep(d/50); d } };
         
         echo("Je viens d'avancer de : " + dReal + "; je voulais avancer de : " + d + ";");
-        
+
         var angleRad = _angle * Pi / 180;
         _x += dReal * cos(angleRad);
         _y += dReal * sin(angleRad);
 
         echo("I'm done (" + _x + ", " + _y + ")");
-        done!;
+		
+		if (dReal != d)
+			tag.stop;
     };
 
     function forwardAtX (xWanted) {
@@ -66,14 +66,10 @@ class Robot {
         sleep(angle/90);
     };
 
-    function stop (tag) {
+    function stop {
         echo("STOP !");
         if (moving) {
             forward_t.stop(5);
-            forward_t.block(0);
-            waituntil(done?) |
-            tag.stop |
-            forward_t.unblock;
             echo("we are stoped");
         };
     };

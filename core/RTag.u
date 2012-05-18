@@ -1,0 +1,8 @@
+var RTag = do (Tag.new) {
+	function init (name) {
+		this.name = name;
+		var this.done = false;
+
+		at (this.enter?) this.done = false;
+	};
+};
