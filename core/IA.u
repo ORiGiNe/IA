@@ -13,8 +13,14 @@ class IA {
 	var _bot;
 
 
-	function init (bot) {
+	var alert;
+
+
+	function init (bot, event) {
 		_bot = bot;
+		
+
+		at (event?) alert;
 	};
 
 

@@ -29,9 +29,7 @@ function s.get
     return 30
 }|;*/
 
-var opponent = Event.new|;
-
-var r = Radar.new([ss1,ss2,ss3,ss4,ss5,ss6,ss7],opponent)|;
+var r = Radar.new([ss1,ss2,ss3,ss4,ss5,ss6,ss7])|;
 
 log.log << "mise à jour de posMonitored"|;
 r.posMonitored = [0]|;
@@ -39,7 +37,7 @@ r.delay = 0.1s|;
 
 var state = "normal"|;
 
-at (opponent?)
+at (r.event?.)
     if (state != "crisis") {
 		    state = "crisis";
 		    log.log << "OPPONENT !!!";

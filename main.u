@@ -12,8 +12,10 @@ requireFile("config.u");
 // le bot
 var bot = Bot.new(0,0,0,"R")|
 
+var e = Event.new;
+
 // l'IA
-var ia = IA.new(bot);
+var ia = IA.new(bot,e);
 
 
 /* Les différents tag que l'on va utiliser.
@@ -208,14 +210,14 @@ function main {
 			cross_t.done = true;
 
 
-	echo(goBackInv_t);
-	{sleep(3); bot.stop},
+	ia.alert = function { _bot.stop };
+	{sleep(3); e!},
 	bot.rotate(45);
     bot.forwardAtY(50);
 	ia.launch(goBackInv, goBackInv_t);
 	ia.launch(poussoirs, poussoirs_t);
 	ia.launch(cross, cross_t);
-	{sleep(6); bot.stop},
+	{sleep(6); e!},
 	ia.launch(poussoirs, poussoirs_t);
 	echo("x = " + bot._x)|
 	echo("y = " + bot._y)|

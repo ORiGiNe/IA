@@ -1,10 +1,10 @@
 class Radar {
 	var _sonars = []; // liste des couples (sonar, position)
 	var _sonarsMonitored = []; // liste des sonars surveillées
-	var _event; // événement émis en cas d'approche
 	var _monitorLoop = Tag.new("Monitor Loop"); // tag contenant la loop de monitoring
     var _monitorLoop.update = _monitorLoop.clone; // tag fils
 	
+	var event; // événement émis en cas d'approche
 	var posMonitored = []; // liste des positions surveillées
     var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
 	var delay = 0.03s; // delai entre deux check des sonars
@@ -14,9 +14,8 @@ class Radar {
 	var _logLoop = Logger.new("Monitoring");
 	
 	// constructeur
-	function init (sonars, event) {
+	function init (sonars) {
         _sonars = sonars;
-		_event = event;
 		
 		// dès que les positions surveillées changent,
         // on met à jour la liste des sonars surveillés
@@ -88,7 +87,7 @@ class Radar {
                     // nécéssaire, je ne sais pas pourquoi
                     var distMin = distMin;
                     if (sonar.foldl(function (a, b) { a && (b.get < distMin) }, true)) {
-	    				_event!
+	    				event!
                     };
 				}
 			};
