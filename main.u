@@ -23,12 +23,12 @@ var ia = IA.new(bot,e);
  * arriver à la fin de son exécution ou s'il a été stopé en cours de route
  */
 
-var main_t = Tag.new("main")|
+var ia.main_t = Tag.new("main")|
 
-var poussoirs_t = RTag.new("poussoirs")|
-var goBack_t = RTag.new("goBack")|
-var goBackInv_t = RTag.new("goBackInv")|
-var cross_t = RTag.new("cross")|
+var ia.poussoirs_t = RTag.new("poussoirs")|
+var ia.goBack_t = RTag.new("goBack")|
+var ia.goBackInv_t = RTag.new("goBackInv")|
+var ia.cross_t = RTag.new("cross")|
 
 
 // les différentes actions du bot
@@ -37,8 +37,8 @@ var cross_t = RTag.new("cross")|
  *
  * Fait demie tour dans le sens des aiguilles d'une montre et ramène son magot
  */
-function goBack {
-    do (bot) {
+function ia.goBack {
+    do (_bot) {
         if (_y > 126) {
             // on se ramène dans le bonne axe
             setAngle(0);
@@ -63,8 +63,8 @@ function goBack {
  * On tente de faire tour de l'île (un U) pour rafler tous les CDs qui trainent
  * dans la mer (on est un peu écolo sur les bords). On part par la droite de l'île.
  */
-function goBackInv {
-    do (bot) {
+function ia.goBackInv {
+    do (_bot) {
 		if (_y < 100) {
 			setAngle(0);
 	        forwardAtX(234);
@@ -94,8 +94,8 @@ function goBackInv {
  * Condition initiale : le bot doit être dans l'axe d'une des deux lignes
  * noires.
  */
-function poussoirs {
-    do (bot) {
+function ia.poussoirs {
+    do (_bot) {
         // on check très grossièrement où on est
         if (_x < 150) {
             // on est près du premier poussoirs
@@ -123,8 +123,8 @@ function poussoirs {
 }|;
 
 
-function cross {
-	do (bot) {
+function ia.cross {
+	do (_bot) {
 		var x;
 
 		if (_x < 150)
@@ -148,21 +148,21 @@ function cross {
 }|;
 
 
-function main {
+function ia.main {
 	at (goBack_t.leave?) {
 		if (!goBack_t.done) {
-			ia.current_t = Tag.new();
+			current_t = Tag.new();
 	
 			for (4) {
 		    	sleep(0.5s);
 			    if (!goBack_t.done)
-					ia.current_t:
+					current_t:
 				    	goBack
 			    else break;
 			};
 
 			if (!goBack_t.done)
-				ia.launch(goBackInv, goBackInv_t);
+				launch(goBackInv, goBackInv_t);
 		
 			goBack_t.done = true;
 		}
@@ -171,18 +171,19 @@ function main {
 
 	at (goBackInv_t.leave?) {
 		if (!goBackInv_t.done) {
-        	ia.current_t = Tag.new();
+			echo("débile mental ?");
+        	current_t = Tag.new();
         
 	        for (4) {
     	        sleep(0.5s);
         	    if (!goBackInv_t.done) {
-            	    ia.current_t:
+            	    current_t:
                 	    goBackInv;
 	            }
     	        else break;
         	};
 
-	        ia.launch(goBack, goBack_t);
+	        launch(goBack, goBack_t);
 			goBackInv_t.done = true;
 	    };
 	};
@@ -194,7 +195,7 @@ function main {
 	        for (6) {
     	        sleep(0.5s);
         	    if (!poussoirs_t.done) {
-            	    ia.current_t:
+            	    current_t:
                 	    poussoirs;
 	            }
     	        else break;
@@ -210,26 +211,26 @@ function main {
 			cross_t.done = true;
 
 
-	ia.alert = function { _bot.stop };
-	{sleep(3); e!},
-	bot.rotate(45);
-    bot.forwardAtY(50);
-	ia.launch(goBackInv, goBackInv_t);
-	ia.launch(poussoirs, poussoirs_t);
-	ia.launch(cross, cross_t);
-	{sleep(6); e!},
-	ia.launch(poussoirs, poussoirs_t);
-	echo("x = " + bot._x)|
-	echo("y = " + bot._y)|
+	alert = function { _bot.stop };
+	_bot.rotate(45);
+	_bot.forwardAtY(50);
+	launch(goBackInv, goBackInv_t);
+	launch(poussoirs, poussoirs_t);
+	launch(cross, cross_t);
+	launch(poussoirs, poussoirs_t);
+	echo("x = " + _bot._x)|
+	echo("y = " + _bot._y)|
 }|;
 
 
 var  start = true;
 
-at (start) main_t: main;
+at (start) main_t: ia.main;
 at (!start) { echo ("bite"); main_t.stop };
 
 sleep(3);
 start = false;
-sleep(3);
+sleep(1);
 start = true;
+{sleep(4); echo("!!!!!!!!!!!!!!!!!!!"); e!};
+{sleep(26); echo("===================="); e!};
