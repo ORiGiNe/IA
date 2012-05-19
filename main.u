@@ -12,10 +12,31 @@ requireFile("config.u");
 // le bot
 var bot = Bot.new(0,0,0,"R")|
 
-var e = Event.new;
+var e = Event.new|;
 
 // l'IA
-var ia = IA.new(bot,e);
+var ia = IA.new(bot,e)|;
+
+
+
+// initialisation
+
+
+function initialize {
+	do (bot) {
+		forward(-15);
+		_x = 0;
+		forward(15);
+		rotate(90);
+		forward(-15);
+		_y = 0;
+		forward(15);
+		rotate(-90);
+
+		assert (_x == 15 && _y == 15);
+	};
+}|;
+
 
 
 /* Les différents tag que l'on va utiliser.
@@ -171,7 +192,6 @@ function ia.main {
 
 	at (goBackInv_t.leave?) {
 		if (!goBackInv_t.done) {
-			echo("débile mental ?");
         	current_t = Tag.new();
         
 	        for (4) {
@@ -222,6 +242,8 @@ function ia.main {
 	echo("y = " + _bot._y)|
 }|;
 
+
+initialize;
 
 var  start = true;
 
