@@ -1,0 +1,76 @@
+class Bot {
+    var _x;
+    var _y;
+    var _angle;
+    var _zone;
+    var Pi = 4*atan(1);
+	var tag;
+
+    // tag dans lequel sera lancée la fonction faisant avancer le robot
+    var forward_t = Tag.new("forward");
+
+    // y a-t-il un mouvement en cours ?
+    var moving = false;
+
+
+    function init (x, y, angle, zone) {
+        _x = x;
+        _y = y;
+        _angle = angle;
+        _zone = zone;
+    
+        at (forward_t.enter?) moving = true;
+        at (forward_t.leave?) moving = false;
+    };
+
+    function rad {
+        _angle * Pi / 180;
+    };
+
+    function forward (d) {
+        var dReal = { forward_t: { sleep(d/50); d } };
+        
+        echo("Je viens d'avancer de : " + dReal + "; je voulais avancer de : " + d + ";");
+
+        var angleRad = _angle * Pi / 180;
+        _x += dReal * cos(angleRad);
+        _y += dReal * sin(angleRad);
+
+        echo("I'm done (" + _x + ", " + _y + ")");
+		
+		if (dReal != d)
+			tag.stop;
+    };
+
+    function forwardAtX (xWanted) {
+        var d = (xWanted - _x) / cos(rad);
+        forward (d);
+    };
+
+    function forwardAtY (yWanted) {
+        var d = (yWanted - _y) / sin(rad);
+        forward (d);
+    };
+
+    function rotate (angle) {
+        if (_zone == "R")
+            _angle += angle
+        else
+            _angle -= angle;
+
+        sleep(angle/90);
+    };
+
+    function setAngle (angle) {
+        _angle = angle;
+        sleep(angle/90);
+    };
+
+    function stop {
+        echo("STOP !");
+        if (moving) {
+            forward_t.stop(5);
+            echo("we are stoped");
+        };
+    };
+}|;

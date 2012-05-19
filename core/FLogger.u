@@ -35,8 +35,6 @@ var FLogger = do (Finalizable.new) {
             _file = File.create(_path);
 
         _stream = OutputStream.new(_file);
-        
-        echo("!!!!!!!!!!!!");
     };
 
     function '<<' (string) { 

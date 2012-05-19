@@ -1,22 +1,21 @@
 class Radar {
 	var _sonars = []; // liste des couples (sonar, position)
 	var _sonarsMonitored = []; // liste des sonars surveillées
-	var _event; // événement émis en cas d'approche
 	var _monitorLoop = Tag.new("Monitor Loop"); // tag contenant la loop de monitoring
     var _monitorLoop.update = _monitorLoop.clone; // tag fils
 	
+	var event; // événement émis en cas d'approche
 	var posMonitored = []; // liste des positions surveillées
     var _oldPosMonitored = []; // pour réagir lors d'un changement de valeur
 	var delay = 0.03s; // delai entre deux check des sonars
-	var distMin = 20; // distance minimale à l'adversaire que l'on accepte
+	var distMin = 40; // distance minimale à l'adversaire que l'on accepte
 
 	var _logRadar = Logger.new("Radar");
 	var _logLoop = Logger.new("Monitoring");
 	
 	// constructeur
-	function init (sonars, event) {
+	function init (sonars) {
         _sonars = sonars;
-		_event = event;
 		
 		// dès que les positions surveillées changent,
         // on met à jour la liste des sonars surveillés
@@ -77,9 +76,10 @@ class Radar {
                 _monitorLoop.update:
     				every (delay) {
 					var d = sonar[0].get;
-					if (d >= 0)
+					if (d >= 0) {
 		    				distance = sonar[0].get;
-		    			_logLoop.log << "distance = " + distance
+		    				_logLoop.log << "distance " + sonar[0] + " = " + distance
+					};
 			    	},
 
 				_logLoop.log << "démarrage du at";
@@ -90,7 +90,7 @@ class Radar {
                     // nécéssaire, je ne sais pas pourquoi
                     var distMin = distMin;
                     if (sonar.foldl(function (a, b) { a && (b.get < distMin) }, true)) {
-	    				_event!
+	    				event!
                     };
 				}
 			};
