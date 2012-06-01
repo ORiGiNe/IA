@@ -1,0 +1,45 @@
+requireFile("core/Sonar.u");
+requireFile("core/Radar.u");
+requireFile("config.u");
+
+
+//initialisation asserv
+
+var asservGaop = UAsserv.new("Global.ttyAsserv");
+
+asservGaop.initialise_asserv();
+
+//initialisation arbre
+
+var usGaop = UGaop.new("Global.ttySonars");
+
+var s1 = UCapteur.new(1,usGaop);
+var s2 = UCapteur.new(2,usGaop);
+
+usGaop.initialise;
+
+var so1 = Sonar.new(s1,2,35);
+var so2 = Sonar.new(s2,6,35);
+
+
+var radar = Radar.new([so1,so2])|;
+
+radar.posMonitored = [2,6]|;
+radar.delay = 0.1s|;
+
+var state = "normal"|;
+
+
+at (radar.event?.) {
+    if (state != "crisis") {
+      state = "crisis";
+      var _stop = arreter();
+//      pathfind(_stop);
+     };
+}
+onleave {
+    state = "normal";
+};
+
+avancer(60);
+
